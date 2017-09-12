@@ -19,13 +19,14 @@
 
 namespace Doctrine\DBAL\Schema;
 
-use Doctrine\DBAL\Driver\SQLSrv\SQLSrvException;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Types\Type;
 
 /**
  * SQL Server Schema Manager.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author  Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author  Juozas Kaziukenas <juozas@juokaz.com>
@@ -34,6 +35,34 @@ use Doctrine\DBAL\Types\Type;
  */
 class SQLServerSchemaManager extends AbstractSchemaManager
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function dropDatabase($database)
+    {
+        try {
+            parent::dropDatabase($database);
+        } catch (DBALException $exception) {
+            $exception = $exception->getPrevious();
+
+            if (! $exception instanceof DriverException) {
+                throw $exception;
+            }
+
+            // If we have a error code 3702, the drop database operation failed
+            // because of active connections on the database.
+            // To force dropping the database, we first have to close all active connections
+            // on that database and issue the drop database operation again.
+            if ($exception->getErrorCode() !== 3702) {
+                throw $exception;
+            }
+
+            $this->closeActiveDatabaseConnections($database);
+
+            parent::dropDatabase($database);
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -79,34 +108,31 @@ class SQLServerSchemaManager extends AbstractSchemaManager
                 break;
         }
 
-        $type = $this->_platform->getDoctrineTypeMapping($dbType);
-
-        switch ($type) {
-            case 'char':
-                $fixed = true;
-                break;
-            case 'text':
-                $fixed = false;
-                break;
+        if ('char' === $dbType || 'nchar' === $dbType || 'binary' === $dbType) {
+            $fixed = true;
         }
 
-        $options = array(
-            'length' => ($length == 0 || !in_array($type, array('text', 'string'))) ? null : $length,
-            'unsigned' => false,
-            'fixed' => (bool) $fixed,
-            'default' => $default !== 'NULL' ? $default : null,
-            'notnull' => (bool) $tableColumn['notnull'],
-            'scale' => $tableColumn['scale'],
-            'precision' => $tableColumn['precision'],
-            'autoincrement' => (bool) $tableColumn['autoincrement'],
-        );
+        $type                   = $this->_platform->getDoctrineTypeMapping($dbType);
+        $type                   = $this->extractDoctrineTypeFromComment($tableColumn['comment'], $type);
+        $tableColumn['comment'] = $this->removeDoctrineTypeFromComment($tableColumn['comment'], $type);
 
-        $platformOptions = array(
-            'collate' => $tableColumn['collation'] == 'NULL' ? null : $tableColumn['collation']
+        $options = array(
+            'length'        => ($length == 0 || !in_array($type, array('text', 'string'))) ? null : $length,
+            'unsigned'      => false,
+            'fixed'         => (bool) $fixed,
+            'default'       => $default !== 'NULL' ? $default : null,
+            'notnull'       => (bool) $tableColumn['notnull'],
+            'scale'         => $tableColumn['scale'],
+            'precision'     => $tableColumn['precision'],
+            'autoincrement' => (bool) $tableColumn['autoincrement'],
+            'comment'       => $tableColumn['comment'] !== '' ? $tableColumn['comment'] : null,
         );
 
         $column = new Column($tableColumn['name'], Type::getType($type), $options);
-        $column->setPlatformOptions($platformOptions);
+
+        if (isset($tableColumn['collation']) && $tableColumn['collation'] !== 'NULL') {
+            $column->setPlatformOption('collation', $tableColumn['collation']);
+        }
 
         return $column;
     }
@@ -186,6 +212,14 @@ class SQLServerSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
+    protected function getPortableNamespaceDefinition(array $namespace)
+    {
+        return $namespace['name'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function _getPortableViewDefinition($view)
     {
         // @todo
@@ -201,13 +235,13 @@ class SQLServerSchemaManager extends AbstractSchemaManager
 
         try {
             $tableIndexes = $this->_conn->fetchAll($sql);
-        } catch(\PDOException $e) {
+        } catch (\PDOException $e) {
             if ($e->getCode() == "IMSSP") {
                 return array();
             } else {
                 throw $e;
             }
-        } catch(SQLSrvException $e) {
+        } catch (DBALException $e) {
             if (strpos($e->getMessage(), 'SQLSTATE [01000, 15472]') === 0) {
                 return array();
             } else {
@@ -223,8 +257,8 @@ class SQLServerSchemaManager extends AbstractSchemaManager
      */
     public function alterTable(TableDiff $tableDiff)
     {
-        if(count($tableDiff->removedColumns) > 0) {
-            foreach($tableDiff->removedColumns as $col){
+        if (count($tableDiff->removedColumns) > 0) {
+            foreach ($tableDiff->removedColumns as $col) {
                 $columnConstraintSql = $this->getColumnConstraintSQL($tableDiff->name, $col->getName());
                 foreach ($this->_conn->fetchAll($columnConstraintSql) as $constraint) {
                     $this->_conn->exec("ALTER TABLE $tableDiff->name DROP CONSTRAINT " . $constraint['Name']);
@@ -252,5 +286,26 @@ class SQLServerSchemaManager extends AbstractSchemaManager
             INNER JOIN SysColumns Col ON Col.[ColID] = DefCons.[parent_column_id] AND Col.[ID] = Tab.[ID]
             WHERE Col.[Name] = " . $this->_conn->quote($column) ." AND Tab.[Name] = " . $this->_conn->quote($table) . "
             ORDER BY Col.[Name]";
+    }
+
+    /**
+     * Closes currently active connections on the given database.
+     *
+     * This is useful to force DROP DATABASE operations which could fail because of active connections.
+     *
+     * @param string $database The name of the database to close currently active connections for.
+     *
+     * @return void
+     */
+    private function closeActiveDatabaseConnections($database)
+    {
+        $database = new Identifier($database);
+
+        $this->_execSql(
+            sprintf(
+                'ALTER DATABASE %s SET SINGLE_USER WITH ROLLBACK IMMEDIATE',
+                $database->getQuotedName($this->_platform)
+            )
+        );
     }
 }

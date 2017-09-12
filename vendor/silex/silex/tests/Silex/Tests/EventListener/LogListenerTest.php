@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * LogListener
+ * LogListener.
  *
  * @author Jérôme Tamarelle <jerome@tamarelle.net>
  */
@@ -31,7 +31,7 @@ class LogListenerTest extends \PHPUnit_Framework_TestCase
 {
     public function testRequestListener()
     {
-        $logger = $this->getMock('Psr\\Log\\LoggerInterface');
+        $logger = $this->getMockBuilder('Psr\\Log\\LoggerInterface')->getMock();
         $logger
             ->expects($this->once())
             ->method('info')
@@ -41,7 +41,7 @@ class LogListenerTest extends \PHPUnit_Framework_TestCase
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new LogListener($logger));
 
-        $kernel = $this->getMock('Symfony\\Component\\HttpKernel\\HttpKernelInterface');
+        $kernel = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\HttpKernelInterface')->getMock();
 
         $dispatcher->dispatch(KernelEvents::REQUEST, new GetResponseEvent($kernel, Request::create('/subrequest'), HttpKernelInterface::SUB_REQUEST), 'Skip sub requests');
 
@@ -50,7 +50,7 @@ class LogListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testResponseListener()
     {
-        $logger = $this->getMock('Psr\\Log\\LoggerInterface');
+        $logger = $this->getMockBuilder('Psr\\Log\\LoggerInterface')->getMock();
         $logger
             ->expects($this->once())
             ->method('info')
@@ -60,7 +60,7 @@ class LogListenerTest extends \PHPUnit_Framework_TestCase
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new LogListener($logger));
 
-        $kernel = $this->getMock('Symfony\\Component\\HttpKernel\\HttpKernelInterface');
+        $kernel = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\HttpKernelInterface')->getMock();
 
         $dispatcher->dispatch(KernelEvents::RESPONSE, new FilterResponseEvent($kernel, Request::create('/foo'), HttpKernelInterface::SUB_REQUEST, Response::create('subrequest', 200)), 'Skip sub requests');
 
@@ -69,23 +69,23 @@ class LogListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testExceptionListener()
     {
-        $logger = $this->getMock('Psr\\Log\\LoggerInterface');
+        $logger = $this->getMockBuilder('Psr\\Log\\LoggerInterface')->getMock();
         $logger
             ->expects($this->once())
             ->method('critical')
-            ->with($this->equalTo('RuntimeException: Fatal error (uncaught exception) at '.__FILE__.' line '.(__LINE__+14)))
+            ->with($this->equalTo('RuntimeException: Fatal error (uncaught exception) at '.__FILE__.' line '.(__LINE__ + 14)))
         ;
 
         $logger
             ->expects($this->once())
             ->method('error')
-            ->with($this->equalTo('Symfony\Component\HttpKernel\Exception\HttpException: Http error (uncaught exception) at '.__FILE__.' line '.(__LINE__+10)))
+            ->with($this->equalTo('Symfony\Component\HttpKernel\Exception\HttpException: Http error (uncaught exception) at '.__FILE__.' line '.(__LINE__ + 10)))
         ;
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new LogListener($logger));
 
-        $kernel = $this->getMock('Symfony\\Component\\HttpKernel\\HttpKernelInterface');
+        $kernel = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\HttpKernelInterface')->getMock();
 
         $dispatcher->dispatch(KernelEvents::EXCEPTION, new GetResponseForExceptionEvent($kernel, Request::create('/foo'), HttpKernelInterface::SUB_REQUEST, new \RuntimeException('Fatal error')));
 

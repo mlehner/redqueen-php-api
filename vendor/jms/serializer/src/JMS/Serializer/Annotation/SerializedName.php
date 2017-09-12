@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ use JMS\Serializer\Exception\RuntimeException;
 
 /**
  * @Annotation
- * @Target({"PROPERTY","METHOD"})
+ * @Target({"PROPERTY","METHOD", "ANNOTATION"})
  */
 final class SerializedName
 {
@@ -30,7 +30,7 @@ final class SerializedName
 
     public function __construct(array $values)
     {
-        if (!is_string($values['value'])) {
+        if (!isset($values['value']) || !is_string($values['value'])) {
             throw new RuntimeException(sprintf('"value" must be a string.'));
         }
 

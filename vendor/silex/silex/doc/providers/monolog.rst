@@ -1,5 +1,5 @@
-MonologServiceProvider
-======================
+Monolog
+=======
 
 The *MonologServiceProvider* provides a default logging mechanism through
 Jordi Boggiano's `Monolog <https://github.com/Seldaek/monolog>`_ library.
@@ -12,8 +12,8 @@ Parameters
 ----------
 
 * **monolog.logfile**: File where logs are written to.
-* **monolog.bubble** = (optional) Whether the messages that are handled can bubble up the stack or not.
-* **monolog.permission** = (optional) File permissions default (null), nothing change.
+* **monolog.bubble**: (optional) Whether the messages that are handled can bubble up the stack or not.
+* **monolog.permission**: (optional) File permissions default (null), nothing change.
 
 * **monolog.level** (optional): Level of logging, defaults
   to ``DEBUG``. Must be one of ``Logger::DEBUG``, ``Logger::INFO``,
@@ -35,7 +35,7 @@ Services
 
   Example usage::
 
-    $app['monolog']->addDebug('Testing the Monolog logging.');
+    $app['monolog']->debug('Testing the Monolog logging.');
 
 * **monolog.listener**: An event listener to log requests, responses and errors.
 
@@ -51,28 +51,25 @@ Registering
 .. note::
 
     Monolog comes with the "fat" Silex archive but not with the regular one.
-    If you are using Composer, add it as a dependency to your
-    ``composer.json`` file:
+    If you are using Composer, add it as a dependency:
 
-    .. code-block:: json
+    .. code-block:: bash
 
-        "require": {
-            "monolog/monolog": ">=1.0.0"
-        }
+        composer require monolog/monolog
 
 Usage
 -----
 
 The MonologServiceProvider provides a ``monolog`` service. You can use it to
-add log entries for any logging level through ``addDebug()``, ``addInfo()``,
-``addWarning()`` and ``addError()``::
+add log entries for any logging level through ``debug()``, ``info()``,
+``warning()`` and ``error()``::
 
     use Symfony\Component\HttpFoundation\Response;
 
     $app->post('/user', function () use ($app) {
         // ...
 
-        $app['monolog']->addInfo(sprintf("User '%s' registered.", $username));
+        $app['monolog']->info(sprintf("User '%s' registered.", $username));
 
         return new Response('', 201);
     });

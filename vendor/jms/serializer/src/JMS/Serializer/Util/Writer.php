@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class Writer
      */
     public function writeln($content)
     {
-        $this->write($content."\n");
+        $this->write($content . "\n");
 
         return $this;
     }
@@ -69,7 +69,7 @@ class Writer
     public function revert()
     {
         $change = array_pop($this->changes);
-        $this->changeCount -=1 ;
+        $this->changeCount -= 1;
         $this->content = substr($this->content, 0, -1 * strlen($change));
     }
 
@@ -83,16 +83,17 @@ class Writer
         $addition = '';
 
         $lines = explode("\n", $content);
-        for ($i=0,$c=count($lines); $i<$c; $i++) {
+        for ($i = 0, $c = count($lines); $i < $c; $i++) {
             if ($this->indentationLevel > 0
                 && !empty($lines[$i])
-                && ((empty($addition) && "\n" === substr($this->content, -1)) || "\n" === substr($addition, -1))) {
+                && ((empty($addition) && "\n" === substr($this->content, -1)) || "\n" === substr($addition, -1))
+            ) {
                 $addition .= str_repeat(' ', $this->indentationLevel * $this->indentationSpaces);
             }
 
             $addition .= $lines[$i];
 
-            if ($i+1 < $c) {
+            if ($i + 1 < $c) {
                 $addition .= "\n";
             }
         }

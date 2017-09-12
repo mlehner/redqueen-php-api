@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,30 @@
 
 namespace JMS\Serializer\Construction;
 
-use JMS\Serializer\VisitorInterface;
-use JMS\Serializer\Metadata\ClassMetadata;
+use Doctrine\Instantiator\Instantiator;
 use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\Metadata\ClassMetadata;
+use JMS\Serializer\VisitorInterface;
 
 class UnserializeObjectConstructor implements ObjectConstructorInterface
 {
+    /** @var Instantiator */
+    private $instantiator;
+
     public function construct(VisitorInterface $visitor, ClassMetadata $metadata, $data, array $type, DeserializationContext $context)
     {
-        return unserialize(sprintf('O:%d:"%s":0:{}', strlen($metadata->name), $metadata->name));
+        return $this->getInstantiator()->instantiate($metadata->name);
+    }
+
+    /**
+     * @return Instantiator
+     */
+    private function getInstantiator()
+    {
+        if (null == $this->instantiator) {
+            $this->instantiator = new Instantiator();
+        }
+
+        return $this->instantiator;
     }
 }

@@ -4,8 +4,97 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcd882e8fa1d092c91e9b5da2841c4f0f
+class ComposerStaticInitbc22bbd44d76b325442d0af01f2f4e65
 {
+    public static $files = array (
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+    );
+
+    public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Component\\Translation\\' => 30,
+            'Symfony\\Component\\Routing\\' => 26,
+            'Symfony\\Component\\PropertyAccess\\' => 33,
+            'Symfony\\Component\\HttpKernel\\' => 29,
+            'Symfony\\Component\\HttpFoundation\\' => 33,
+            'Symfony\\Component\\EventDispatcher\\' => 34,
+            'Symfony\\Component\\Debug\\' => 24,
+            'Silex\\' => 6,
+        ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'D' => 
+        array (
+            'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Common\\Cache\\' => 22,
+            'Doctrine\\Common\\Annotations\\' => 28,
+            'Doctrine\\Common\\' => 16,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Symfony\\Component\\Translation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/translation',
+        ),
+        'Symfony\\Component\\Routing\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/routing',
+        ),
+        'Symfony\\Component\\PropertyAccess\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/property-access',
+        ),
+        'Symfony\\Component\\HttpKernel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/http-kernel',
+        ),
+        'Symfony\\Component\\HttpFoundation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/http-foundation',
+        ),
+        'Symfony\\Component\\EventDispatcher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
+        ),
+        'Symfony\\Component\\Debug\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/debug',
+        ),
+        'Silex\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/silex/silex/src/Silex',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Doctrine\\Instantiator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Common\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
+        ),
+        'Doctrine\\Common\\Annotations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
+        ),
+        'Doctrine\\Common\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/common/lib/Doctrine/Common',
+        ),
+    );
+
     public static $prefixesPsr0 = array (
         'S' => 
         array (
@@ -13,45 +102,9 @@ class ComposerStaticInitcd882e8fa1d092c91e9b5da2841c4f0f
             array (
                 0 => __DIR__ . '/..' . '/symfony/validator',
             ),
-            'Symfony\\Component\\Translation\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/translation',
-            ),
-            'Symfony\\Component\\Routing\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/routing',
-            ),
-            'Symfony\\Component\\PropertyAccess\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/property-access',
-            ),
-            'Symfony\\Component\\HttpKernel\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/http-kernel',
-            ),
-            'Symfony\\Component\\HttpFoundation\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/http-foundation',
-            ),
-            'Symfony\\Component\\EventDispatcher\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
-            ),
-            'Symfony\\Component\\Debug\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/symfony/debug',
-            ),
-            'Silex' => 
-            array (
-                0 => __DIR__ . '/..' . '/silex/silex/src',
-            ),
         ),
         'P' => 
         array (
-            'Psr\\Log\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/psr/log',
-            ),
             'Pimple' => 
             array (
                 0 => __DIR__ . '/..' . '/pimple/pimple/lib',
@@ -101,18 +154,6 @@ class ComposerStaticInitcd882e8fa1d092c91e9b5da2841c4f0f
             array (
                 0 => __DIR__ . '/..' . '/doctrine/collections/lib',
             ),
-            'Doctrine\\Common\\Cache\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/cache/lib',
-            ),
-            'Doctrine\\Common\\Annotations\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/annotations/lib',
-            ),
-            'Doctrine\\Common\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/common/lib',
-            ),
         ),
         'B' => 
         array (
@@ -123,15 +164,12 @@ class ComposerStaticInitcd882e8fa1d092c91e9b5da2841c4f0f
         ),
     );
 
-    public static $classMap = array (
-        'SessionHandlerInterface' => __DIR__ . '/..' . '/symfony/http-foundation/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',
-    );
-
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitcd882e8fa1d092c91e9b5da2841c4f0f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitcd882e8fa1d092c91e9b5da2841c4f0f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitbc22bbd44d76b325442d0af01f2f4e65::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitbc22bbd44d76b325442d0af01f2f4e65::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitbc22bbd44d76b325442d0af01f2f4e65::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

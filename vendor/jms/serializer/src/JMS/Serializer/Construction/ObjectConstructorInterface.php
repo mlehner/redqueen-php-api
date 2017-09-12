@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 
 namespace JMS\Serializer\Construction;
 
-use JMS\Serializer\VisitorInterface;
-use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\Metadata\ClassMetadata;
+use JMS\Serializer\VisitorInterface;
 
 /**
  * Implementations of this interface construct new objects during deserialization.
@@ -39,6 +39,7 @@ interface ObjectConstructorInterface
      * @param ClassMetadata $metadata
      * @param mixed $data
      * @param array $type ["name" => string, "params" => array]
+     * @param DeserializationContext $context
      *
      * @return object
      */

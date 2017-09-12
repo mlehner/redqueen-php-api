@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 namespace JMS\Serializer\Metadata\Driver;
 
-use JMS\Serializer\Metadata\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as DoctrineClassMetadata;
+use JMS\Serializer\Metadata\ClassMetadata;
 use JMS\Serializer\Metadata\PropertyMetadata;
 
 /**
@@ -30,8 +30,8 @@ class DoctrineTypeDriver extends AbstractDoctrineTypeDriver
 {
     protected function setDiscriminator(DoctrineClassMetadata $doctrineMetadata, ClassMetadata $classMetadata)
     {
-        if (empty($classMetadata->discriminatorMap) && ! $classMetadata->discriminatorDisabled
-            && ! empty($doctrineMetadata->discriminatorMap) && $doctrineMetadata->isRootEntity()
+        if (empty($classMetadata->discriminatorMap) && !$classMetadata->discriminatorDisabled
+            && !empty($doctrineMetadata->discriminatorMap) && $doctrineMetadata->isRootEntity()
         ) {
             $classMetadata->setDiscriminator(
                 $doctrineMetadata->discriminatorColumn['name'],
@@ -55,7 +55,7 @@ class DoctrineTypeDriver extends AbstractDoctrineTypeDriver
             // For inheritance schemes, we cannot add any type as we would only add the super-type of the hierarchy.
             // On serialization, this would lead to only the supertype being serialized, and properties of subtypes
             // being ignored.
-            if ($targetMetadata instanceof DoctrineClassMetadata && ! $targetMetadata->isInheritanceTypeNone()) {
+            if ($targetMetadata instanceof DoctrineClassMetadata && !$targetMetadata->isInheritanceTypeNone()) {
                 return;
             }
 

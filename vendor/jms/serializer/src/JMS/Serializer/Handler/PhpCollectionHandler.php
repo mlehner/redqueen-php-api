@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,14 +41,14 @@ class PhpCollectionHandler implements SubscribingHandlerInterface
                     'direction' => GraphNavigator::DIRECTION_SERIALIZATION,
                     'type' => $type,
                     'format' => $format,
-                    'method' => 'serialize'.$shortName,
+                    'method' => 'serialize' . $shortName,
                 );
 
                 $methods[] = array(
                     'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
                     'type' => $type,
                     'format' => $format,
-                    'method' => 'deserialize'.$shortName,
+                    'method' => 'deserialize' . $shortName,
                 );
             }
         }

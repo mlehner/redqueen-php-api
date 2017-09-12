@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 namespace JMS\Serializer;
 
 use JMS\Serializer\Exception\RuntimeException;
-use JMS\Serializer\Metadata\PropertyMetadata;
 use JMS\Serializer\Metadata\ClassMetadata;
+use JMS\Serializer\Metadata\PropertyMetadata;
 
 /**
  * Generic Deserialization Visitor.
@@ -58,7 +58,7 @@ abstract class GenericDeserializationVisitor extends AbstractVisitor
 
     public function visitString($data, array $type, Context $context)
     {
-        $data = (string) $data;
+        $data = (string)$data;
 
         if (null === $this->result) {
             $this->result = $data;
@@ -69,7 +69,7 @@ abstract class GenericDeserializationVisitor extends AbstractVisitor
 
     public function visitBoolean($data, array $type, Context $context)
     {
-        $data = (Boolean) $data;
+        $data = (Boolean)$data;
 
         if (null === $this->result) {
             $this->result = $data;
@@ -80,7 +80,7 @@ abstract class GenericDeserializationVisitor extends AbstractVisitor
 
     public function visitInteger($data, array $type, Context $context)
     {
-        $data = (integer) $data;
+        $data = (integer)$data;
 
         if (null === $this->result) {
             $this->result = $data;
@@ -91,7 +91,7 @@ abstract class GenericDeserializationVisitor extends AbstractVisitor
 
     public function visitDouble($data, array $type, Context $context)
     {
-        $data = (double) $data;
+        $data = (double)$data;
 
         if (null === $this->result) {
             $this->result = $data;
@@ -102,12 +102,12 @@ abstract class GenericDeserializationVisitor extends AbstractVisitor
 
     public function visitArray($data, array $type, Context $context)
     {
-        if ( ! is_array($data)) {
+        if (!is_array($data)) {
             throw new RuntimeException(sprintf('Expected array, but got %s: %s', gettype($data), json_encode($data)));
         }
 
         // If no further parameters were given, keys/values are just passed as is.
-        if ( ! $type['params']) {
+        if (!$type['params']) {
             if (null === $this->result) {
                 $this->result = $data;
             }
@@ -162,23 +162,26 @@ abstract class GenericDeserializationVisitor extends AbstractVisitor
     {
         $name = $this->namingStrategy->translateName($metadata);
 
-        if (null === $data || ! array_key_exists($name, $data)) {
+        if (null === $data) {
             return;
         }
 
-        if ( ! $metadata->type) {
+        if (!is_array($data)) {
+            throw new RuntimeException(sprintf('Invalid data "%s"(%s), expected "%s".', $data, $metadata->type['name'], $metadata->reflection->class));
+        }
+
+        if (!array_key_exists($name, $data)) {
+            return;
+        }
+
+        if (!$metadata->type) {
             throw new RuntimeException(sprintf('You must define a type for %s::$%s.', $metadata->reflection->class, $metadata->name));
         }
 
         $v = $data[$name] !== null ? $this->navigator->accept($data[$name], $metadata->type, $context) : null;
 
-        if (null === $metadata->setter) {
-            $metadata->reflection->setValue($this->currentObject, $v);
+        $this->accessor->setValue($this->currentObject, $v, $metadata);
 
-            return;
-        }
-
-        $this->currentObject->{$metadata->setter}($v);
     }
 
     public function endVisitingObject(ClassMetadata $metadata, $data, array $type, Context $context)

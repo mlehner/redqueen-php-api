@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,23 @@
 
 namespace JMS\Serializer;
 
+use JMS\Serializer\Accessor\AccessorStrategyInterface;
+use JMS\Serializer\Accessor\DefaultAccessorStrategy;
 use JMS\Serializer\Naming\PropertyNamingStrategyInterface;
 
 abstract class AbstractVisitor implements VisitorInterface
 {
     protected $namingStrategy;
 
-    public function __construct(PropertyNamingStrategyInterface $namingStrategy)
+    /**
+     * @var AccessorStrategyInterface
+     */
+    protected $accessor;
+
+    public function __construct(PropertyNamingStrategyInterface $namingStrategy, AccessorStrategyInterface $accessorStrategy = null)
     {
         $this->namingStrategy = $namingStrategy;
+        $this->accessor = $accessorStrategy ?: new DefaultAccessorStrategy();
     }
 
     public function getNamingStrategy()
@@ -50,10 +58,8 @@ abstract class AbstractVisitor implements VisitorInterface
 
         if (isset($typeArray['params'][1]) && is_array($typeArray['params'][1])) {
             return $typeArray['params'][1];
-        }
-        else {
+        } else {
             return $typeArray['params'][0];
         }
     }
-
 }

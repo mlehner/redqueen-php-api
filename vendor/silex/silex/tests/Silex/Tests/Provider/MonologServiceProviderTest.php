@@ -25,6 +25,19 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
+    private $currErrorHandler;
+
+    protected function setUp()
+    {
+        $this->currErrorHandler = set_error_handler('var_dump');
+        restore_error_handler();
+    }
+
+    protected function tearDown()
+    {
+        set_error_handler($this->currErrorHandler);
+    }
+
     public function testRequestLogging()
     {
         $app = $this->getApplication();
@@ -40,7 +53,9 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($app['monolog.handler']->hasInfo('> GET /foo'));
         $this->assertTrue($app['monolog.handler']->hasInfo('< 200'));
-        $this->assertTrue($app['monolog.handler']->hasInfo('Matched route "GET_foo" (parameters: "_controller": "{}", "_route": "GET_foo")'));
+
+        $records = $app['monolog.handler']->getRecords();
+        $this->assertContains('Matched route "GET_foo"', $records[0]['message']);
     }
 
     public function testManualLogging()
@@ -67,7 +82,7 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
             return 'error handled';
         });
 
-        /**
+        /*
          * Simulate 404, logged to error level
          */
         $this->assertFalse($app['monolog.handler']->hasErrorRecords());
@@ -79,7 +94,7 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
         $pattern = "#Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException: No route found for \"GET /error\" \(uncaught exception\) at .* line \d+#";
         $this->assertMatchingRecord($pattern, Logger::ERROR, $app['monolog.handler']);
 
-        /**
+        /*
          * Simulate unhandled exception, logged to critical
          */
         $app->get('/error', function () {
@@ -100,7 +115,7 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = $this->getApplication();
 
         $app->get('/foo', function () use ($app) {
-            return new RedirectResponse("/bar", 302);
+            return new RedirectResponse('/bar', 302);
         });
 
         $this->assertFalse($app['monolog.handler']->hasInfoRecords());
@@ -126,14 +141,14 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
             ),
         ));
 
-        $app->get("/admin", function () {
-            return "SECURE!";
+        $app->get('/admin', function () {
+            return 'SECURE!';
         });
 
-        $request = Request::create("/admin");
+        $request = Request::create('/admin');
         $app->run($request);
 
-        $this->assertEmpty($app['monolog.handler']->getRecords(), "Expected no logging to occur");
+        $this->assertEmpty($app['monolog.handler']->getRecords(), 'Expected no logging to occur');
     }
 
     public function testStringErrorLevel()
@@ -145,7 +160,7 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Provided logging level 'foo' does not exist. Must be a valid monolog logging level.
      */
     public function testNonExistentStringErrorLevel()
@@ -163,7 +178,7 @@ class MonologServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $app->handle(Request::create('/404'));
 
-        $this->assertEmpty($app['monolog.handler']->getRecords(), "Expected no logging to occur");
+        $this->assertEmpty($app['monolog.handler']->getRecords(), 'Expected no logging to occur');
     }
 
     protected function assertMatchingRecord($pattern, $level, $handler)

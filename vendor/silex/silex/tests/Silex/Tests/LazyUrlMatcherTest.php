@@ -26,10 +26,10 @@ class LazyUrlMatcherTest extends \PHPUnit_Framework_TestCase
     public function testUserMatcherIsCreatedLazily()
     {
         $callCounter = 0;
-        $urlMatcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
+        $urlMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\UrlMatcherInterface')->getMock();
 
         $matcher = new LazyUrlMatcher(function () use ($urlMatcher, &$callCounter) {
-            $callCounter++;
+            ++$callCounter;
 
             return $urlMatcher;
         });
@@ -40,7 +40,7 @@ class LazyUrlMatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException LogicException
+     * @expectedException \LogicException
      * @expectedExceptionMessage Factory supplied to LazyUrlMatcher must return implementation of UrlMatcherInterface.
      */
     public function testThatCanInjectUrlMatcherOnly()
@@ -57,7 +57,7 @@ class LazyUrlMatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testMatchIsProxy()
     {
-        $urlMatcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
+        $urlMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\UrlMatcherInterface')->getMock();
         $urlMatcher->expects($this->once())
             ->method('match')
             ->with('path')
@@ -76,8 +76,8 @@ class LazyUrlMatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetContextIsProxy()
     {
-        $context = $this->getMock('Symfony\Component\Routing\RequestContext');
-        $urlMatcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
+        $context = $this->getMockBuilder('Symfony\Component\Routing\RequestContext')->getMock();
+        $urlMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\UrlMatcherInterface')->getMock();
         $urlMatcher->expects($this->once())
             ->method('setContext')
             ->with($context);
@@ -93,8 +93,8 @@ class LazyUrlMatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetContextIsProxy()
     {
-        $context = $this->getMock('Symfony\Component\Routing\RequestContext');
-        $urlMatcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
+        $context = $this->getMockBuilder('Symfony\Component\Routing\RequestContext')->getMock();
+        $urlMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\UrlMatcherInterface')->getMock();
         $urlMatcher->expects($this->once())
             ->method('getContext')
             ->will($this->returnValue($context));

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,29 @@ namespace JMS\Serializer\Annotation;
 
 /**
  * @Annotation
- * @Target("METHOD")
+ * @Target({"METHOD", "CLASS"})
  *
  * @author Alexander Klimenkov <alx.devel@gmail.com>
  */
 final class VirtualProperty
 {
+    public $exp;
+    public $name;
+    public $options = array();
+
+    public function __construct(array $data)
+    {
+        if (isset($data['value'])) {
+            $data['name'] = $data['value'];
+            unset($data['value']);
+        }
+
+        foreach ($data as $key => $value) {
+            if (!property_exists(__CLASS__, $key)) {
+                throw new \BadMethodCallException(sprintf('Unknown property "%s" on annotation "%s".', $key, __CLASS__));
+            }
+            $this->{$key} = $value;
+        }
+    }
 }
+

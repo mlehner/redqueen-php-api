@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2013 Johannes M. Schmitt <schmittjoh@gmail.com>
+ * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,11 @@ use JMS\Serializer\Context;
 
 class Event
 {
+    /**
+     * @var bool Whether no further event listeners should be triggered
+     */
+    private $propagationStopped = false;
+
     protected $type;
     private $context;
 
@@ -44,5 +49,29 @@ class Event
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Returns whether further event listeners should be triggered.
+     *
+     * @see Event::stopPropagation()
+     *
+     * @return bool Whether propagation was already stopped for this event
+     */
+    public function isPropagationStopped()
+    {
+        return $this->propagationStopped;
+    }
+
+    /**
+     * Stops the propagation of the event to further event listeners.
+     *
+     * If multiple event listeners are connected to the same event, no
+     * further event listener will be triggered once any trigger calls
+     * stopPropagation().
+     */
+    public function stopPropagation()
+    {
+        $this->propagationStopped = true;
     }
 }
