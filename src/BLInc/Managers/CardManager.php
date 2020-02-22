@@ -14,7 +14,7 @@ class CardManager extends TimestampedManager
     {
         $data['isActive'] = (bool)$data['isActive'];
         $data['facilityCode'] = \hexdec(\substr($data['code'], 0, 2));
-        $data['cardNumber'] = \hexdec(\substr($data['code'], 3));
+        $data['cardNumber'] = \hexdec(\substr($data['code'], 2));
 
         return $data;
     }
