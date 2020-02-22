@@ -28,6 +28,16 @@ $app['card.validation_constraints'] = function (Silex\Application $app) {
     return new Assert\Collection(array(
       'fields' => array(
         'name' => new Assert\NotBlank(),
+        'facilityCode' => [
+          new Assert\NotBlank(),
+          new Assert\Type('digit'),
+          new Assert\Range(['min' => 1, 'max' => 255]),
+        ],
+        'cardNumber' => [
+          new Assert\NotBlank(),
+          new Assert\Type('digit'),
+          new Assert\Range(['min' => 1, 'max' => 65535]),
+        ],
         'code' => array(
           new Assert\NotBlank(),
           new Unique(array('table' => 'cards', 'column' => 'code')),
@@ -81,6 +91,10 @@ $app->put('/api/cards/{id}', function(Silex\Application $app, Request $request, 
     $constraints = $app['card.validation_constraints'];
     $constraints->allowMissingFields = true;
 
+    if (isset($card['facilityCode'], $card['cardNumber'])) {
+        $card['code'] = dechex($card['facilityCode']) . dechex($card['cardNumber']);
+    }
+
     $violations = $app['validator']->validateValue($card, $constraints, 'edit');
 
     if (count($violations)) {
@@ -111,6 +125,10 @@ $app->post('/api/cards', function(Silex\Application $app, Request $request) {
 
     if (!is_array($card)) {
         return $app->json(array(array('message' => 'Request must contain a hash or properties.')), 400);
+    }
+
+    if (isset($card['facilityCode'], $card['cardNumber'])) {
+        $card['code'] = dechex($card['facilityCode']) . dechex($card['cardNumber']);
     }
 
     $violations = $app['validator']->validateValue($card, $app['card.validation_constraints'], 'new');

@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 
 abstract class TimestampedManager implements ManagerInterface {
     /**
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     protected $dbal;
 

@@ -3,12 +3,14 @@
 namespace BLInc\Validator\Constraints;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Statement;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class UniqueValidator extends ConstraintValidator {
     /**
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     protected $db;
 
@@ -18,11 +20,11 @@ class UniqueValidator extends ConstraintValidator {
 
     public function validate($value, Constraint $constraint) {
         if (!$constraint instanceof Unique) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Unique');
+            throw new UnexpectedTypeException($constraint, Unique::class);
         }
 
         /**
-         * @var $stmt \Doctrine\DBAL\Statement
+         * @var $stmt Statement
          */
         $stmt = $this->db->createQueryBuilder()
             ->select('t.id')

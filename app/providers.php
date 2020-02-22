@@ -20,7 +20,7 @@ $app->register(new Silex\Provider\ValidatorServiceProvider());
 
 $app['validator.validator_service_ids'] = function() {
     return array(
-        'BLInc\\Validator\\Constraints\\UniqueValidator' => 'validator.blinc_unique_validator'
+        UniqueValidator::class => 'validator.blinc_unique_validator',
     );
 };
 
@@ -28,19 +28,19 @@ $app['validator.blinc_unique_validator'] = function(Silex\Application $app) {
     return new UniqueValidator($app['db']);
 };
 
-$app['log.manager'] = $app->share(function(Silex\Application $app) {
+$app['log.manager'] = Pimple::share(function(Silex\Application $app) {
     return new LogManager($app['db']);
 });
 
-$app['card.manager'] = $app->share(function(Silex\Application $app) {
+$app['card.manager'] = Pimple::share(function(Silex\Application $app) {
     return new CardManager($app['db']);
 });
 
-$app['schedule.manager'] = $app->share(function(Silex\Application $app) {
+$app['schedule.manager'] = Pimple::share(function(Silex\Application $app) {
     return new ScheduleManager($app['db']);
 });
 
-$app['serializer'] = $app->share(function(Silex\Application $app) {
+$app['serializer'] = Pimple::share(function() {
     /**
      * @var $serializer JMS\Serializer\Serializer
      */

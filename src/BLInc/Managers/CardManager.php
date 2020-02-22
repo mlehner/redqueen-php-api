@@ -13,6 +13,8 @@ class CardManager extends TimestampedManager
     public function transformRow(array $data)
     {
         $data['isActive'] = (bool)$data['isActive'];
+        $data['facilityCode'] = \hexdec(\substr($data['code'], 0, 2));
+        $data['cardNumber'] = \hexdec(\substr($data['code'], 3));
 
         return $data;
     }
