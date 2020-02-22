@@ -105,6 +105,8 @@ $app->put('/api/cards/{id}', function(Silex\Application $app, Request $request, 
         );
     }
 
+    unset($card['facilityCode'], $card['cardNumber']);
+
     $app['card.manager']->update($id, $card);
 
     $response = new JsonResponse();
@@ -140,6 +142,8 @@ $app->post('/api/cards', function(Silex\Application $app, Request $request) {
             array('Content-Type' => 'application/json')
         );
     }
+
+    unset($card['facilityCode'], $card['cardNumber']);
 
     $card_id = $app['card.manager']->create($card);
 
