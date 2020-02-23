@@ -26,15 +26,15 @@ $migrateSchema = function (Schema $schema, Connection $connection, $applyMigrati
     return;
   }
 
-  echo "Queries to run... \n\n\n";
-  echo implode("\n", $queries);
-  echo "\n\n\n";
-
-  if ($applyMigrations) {
-    foreach ($queries as $query) {
+  echo "Queries To Run\n\n";
+  foreach ($queries as $query) {
+    echo $query."\n";
+    if ($applyMigrations) {
       $connection->exec($query);
     }
   }
+
+  echo "\n";
 };
 
 /** @var Connection $primaryConnection */
