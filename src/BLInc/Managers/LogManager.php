@@ -4,7 +4,6 @@ namespace BLInc\Managers;
 
 class LogManager extends TimestampedManager
 {
-
     public function getTable()
     {
         return 'logs';

@@ -9,11 +9,16 @@ use JMS\Serializer\Handler\DateHandler;
 use JMS\Serializer\Handler\HandlerRegistryInterface;
 use JMS\Serializer\Handler\ConstraintViolationHandler;
 
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-  'db.default_options' => array(
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+  'db.default_options' => [
     'url' => getenv('REDQUEEN_DB_URL'),
-  )
-));
+  ],
+  'dbs.options' => [
+    'log' => [
+      'url' => getenv('REDQUEEN_LOG_DB_URL'),
+    ]
+  ]
+]);
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
@@ -29,7 +34,7 @@ $app['validator.blinc_unique_validator'] = function(Silex\Application $app) {
 };
 
 $app['log.manager'] = Pimple::share(function(Silex\Application $app) {
-    return new LogManager($app['db']);
+    return new LogManager($app['dbs']['log']);
 });
 
 $app['card.manager'] = Pimple::share(function(Silex\Application $app) {
