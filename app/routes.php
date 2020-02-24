@@ -176,14 +176,22 @@ $app->get('/api/cards', function(Silex\Application $app, Request $request) {
     }, $cards));
 
     $cardIds = array_map(function (array $schedule) {
-      return $schedule['card_id'];
+        return $schedule['card_id'];
     }, $schedules);
 
-    $cardSchedules = array_combine($cardIds, $schedules);
+    $schedulesByCardId = array_combine($cardIds, $schedules);
 
-    $cards = array_map(function (array $card) use ($cardSchedules) {
-      $card['schedules'] = isset($cardSchedules[$card['id']]) ? $cardSchedules[$card['id']] : [];
-      return $card;
+    $cards = array_map(function (array $card) use ($schedulesByCardId) {
+        $cardSchedules = isset($schedulesByCardId[$card['id']]) ? $schedulesByCardId[$card['id']] : [];
+
+        $card['schedules'] = array_map(function (array $schedule) {
+            return [
+              'id' => $schedule['id'],
+              'name' => $schedule['name'],
+            ];
+        }, $cardSchedules);
+
+        return $card;
     }, $cards);
 
     return $app->json(['items' => $cards, 'count' => count($cards)]);
