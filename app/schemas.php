@@ -22,13 +22,13 @@ $scheduleTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true
 $scheduleTable->setPrimaryKey(['id']);
 
 $scheduleTable->addColumn('name', 'string', ['length' => 255, 'notnull' => true]);
-$scheduleTable->addColumn('mon', 'boolean', ['notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('tue', 'boolean', ['notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('wed', 'boolean', ['notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('thu', 'boolean', ['notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('fri', 'boolean', ['notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('sat', 'boolean', ['notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('sun', 'boolean', ['notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('mon', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('tue', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('wed', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('thu', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('fri', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('sat', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('sun', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
 $scheduleTable->addColumn('startTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('endTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('created_at', 'datetime', ['notnull' => true]);
