@@ -1,5 +1,6 @@
 <?php
 
+use BLInc\Managers\ScheduleManager;
 use BLInc\Validator\Constraints\Unique;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -166,6 +167,24 @@ $app->get('/api/cards/{id}', function(Silex\Application $app, Request $request, 
 
 $app->get('/api/cards', function(Silex\Application $app, Request $request) {
     $cards = $app['card.manager']->findAll();
+
+    /** @var ScheduleManager $scheduleManager */
+    $scheduleManager = $app['schedule.manager'];
+
+    $schedules = $scheduleManager->findByCards(array_map(function (array $card) {
+        return $card['id'];
+    }, $cards));
+
+    $cardIds = array_map(function (array $schedule) {
+      return $schedule['card_id'];
+    }, $schedules);
+
+    $cardSchedules = array_combine($cardIds, $schedules);
+
+    $cards = array_map(function (array $card) use ($cardSchedules) {
+      $card['schedules'] = isset($cardSchedules[$card['id']]) ? $cardSchedules[$card['id']] : [];
+      return $card;
+    }, $cards);
 
     return $app->json(['items' => $cards, 'count' => count($cards)]);
 })->bind('get_cards');
