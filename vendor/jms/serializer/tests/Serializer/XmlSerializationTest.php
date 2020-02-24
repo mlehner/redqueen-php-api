@@ -1,21 +1,5 @@
 <?php
 
-/*
- * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace JMS\Serializer\Tests\Serializer;
 
 use JMS\Serializer\Construction\UnserializeObjectConstructor;
@@ -32,6 +16,8 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlAttributeDiscriminatorChild;
 use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlAttributeDiscriminatorParent;
+use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlNamespaceAttributeDiscriminatorChild;
+use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlNamespaceAttributeDiscriminatorParent;
 use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlNamespaceDiscriminatorChild;
 use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlNamespaceDiscriminatorParent;
 use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlNotCDataDiscriminatorChild;
@@ -39,9 +25,12 @@ use JMS\Serializer\Tests\Fixtures\Discriminator\ObjectWithXmlNotCDataDiscriminat
 use JMS\Serializer\Tests\Fixtures\Input;
 use JMS\Serializer\Tests\Fixtures\InvalidUsageOfXmlValue;
 use JMS\Serializer\Tests\Fixtures\ObjectWithNamespacesAndList;
+use JMS\Serializer\Tests\Fixtures\ObjectWithNamespacesAndNestedList;
 use JMS\Serializer\Tests\Fixtures\ObjectWithToString;
 use JMS\Serializer\Tests\Fixtures\ObjectWithVirtualXmlProperties;
 use JMS\Serializer\Tests\Fixtures\ObjectWithXmlKeyValuePairs;
+use JMS\Serializer\Tests\Fixtures\ObjectWithXmlKeyValuePairsWithObjectType;
+use JMS\Serializer\Tests\Fixtures\ObjectWithXmlKeyValuePairsWithType;
 use JMS\Serializer\Tests\Fixtures\ObjectWithXmlNamespaces;
 use JMS\Serializer\Tests\Fixtures\ObjectWithXmlNamespacesAndObjectProperty;
 use JMS\Serializer\Tests\Fixtures\ObjectWithXmlNamespacesAndObjectPropertyAuthor;
@@ -244,9 +233,60 @@ class XmlSerializationTest extends BaseSerializationTest
         );
     }
 
+    public function testObjectWithNamespaceAndNestedList()
+    {
+        $object = new ObjectWithNamespacesAndNestedList();
+        $personCollection = new PersonCollection();
+        $personA = new Person();
+        $personA->age = 11;
+        $personA->name = 'AAA';
+
+        $personB = new Person();
+        $personB->age = 22;
+        $personB->name = 'BBB';
+
+        $personCollection->persons->add($personA);
+        $personCollection->persons->add($personB);
+
+        $object->personCollection = $personCollection;
+
+        $this->assertEquals(
+            $this->getContent('object_with_namespaces_and_nested_list'),
+            $this->serialize($object, SerializationContext::create())
+        );
+        $this->assertEquals(
+            $object,
+            $this->deserialize($this->getContent('object_with_namespaces_and_nested_list'), get_class($object))
+        );
+    }
+
     public function testArrayKeyValues()
     {
         $this->assertEquals($this->getContent('array_key_values'), $this->serializer->serialize(new ObjectWithXmlKeyValuePairs(), 'xml'));
+    }
+
+    public function testDeserializeArrayKeyValues()
+    {
+        $xml = $this->getContent('array_key_values_with_type_1');
+        $result = $this->serializer->deserialize($xml, ObjectWithXmlKeyValuePairsWithType::class, 'xml');
+
+        $this->assertInstanceOf(ObjectWithXmlKeyValuePairsWithType::class, $result);
+        $this->assertEquals(ObjectWithXmlKeyValuePairsWithType::create1(), $result);
+
+        $xml2 = $this->getContent('array_key_values_with_type_2');
+        $result2 = $this->serializer->deserialize($xml2, ObjectWithXmlKeyValuePairsWithType::class, 'xml');
+
+        $this->assertInstanceOf(ObjectWithXmlKeyValuePairsWithType::class, $result2);
+        $this->assertEquals(ObjectWithXmlKeyValuePairsWithType::create2(), $result2);
+    }
+
+    public function testDeserializeTypedAndNestedArrayKeyValues()
+    {
+        $xml = $this->getContent('array_key_values_with_nested_type');
+        $result = $this->serializer->deserialize($xml, ObjectWithXmlKeyValuePairsWithObjectType::class, 'xml');
+
+        $this->assertInstanceOf(ObjectWithXmlKeyValuePairsWithObjectType::class, $result);
+        $this->assertEquals(ObjectWithXmlKeyValuePairsWithObjectType::create1(), $result);
     }
 
     /**
@@ -482,6 +522,20 @@ class XmlSerializationTest extends BaseSerializationTest
         );
     }
 
+    public function testDiscriminatorAsXmlAttributeWithNamespace()
+    {
+        $xml = $this->serialize(new ObjectWithXmlNamespaceAttributeDiscriminatorChild());
+        $this->assertEquals($this->getContent('xml_discriminator_namespace_attribute'), $xml);
+
+        $this->assertInstanceOf(
+            ObjectWithXmlNamespaceAttributeDiscriminatorChild::class,
+            $this->deserialize(
+                $xml,
+                ObjectWithXmlNamespaceAttributeDiscriminatorParent::class
+            )
+        );
+    }
+
     /**
      * @expectedException \JMS\Serializer\Exception\XmlErrorException
      */
@@ -494,9 +548,11 @@ class XmlSerializationTest extends BaseSerializationTest
     {
         $namingStrategy = $this->getMockBuilder(PropertyNamingStrategyInterface::class)->getMock();
         $visitor = new XmlDeserializationVisitor($namingStrategy);
-        $element = simplexml_load_string('<empty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>');
+        $xsdNilAsTrueElement = simplexml_load_string('<empty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>');
+        $xsdNilAsOneElement = simplexml_load_string('<empty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="1"/>');
 
-        $this->assertTrue($visitor->isNull($element));
+        $this->assertTrue($visitor->isNull($xsdNilAsTrueElement));
+        $this->assertTrue($visitor->isNull($xsdNilAsOneElement));
         $this->assertTrue($visitor->isNull(null));
     }
 

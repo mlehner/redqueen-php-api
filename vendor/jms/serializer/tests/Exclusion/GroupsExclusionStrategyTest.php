@@ -1,21 +1,5 @@
 <?php
 
-/*
- * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace JMS\Serializer\Tests\Exclusion;
 
 use JMS\Serializer\Exclusion\GroupsExclusionStrategy;
@@ -63,6 +47,44 @@ class GroupsExclusionStrategyTest extends \PHPUnit_Framework_TestCase
             [[GroupsExclusionStrategy::DEFAULT_GROUP, 'foo'], [GroupsExclusionStrategy::DEFAULT_GROUP], false],
             [[GroupsExclusionStrategy::DEFAULT_GROUP], [GroupsExclusionStrategy::DEFAULT_GROUP, 'foo'], false],
             [['foo'], [GroupsExclusionStrategy::DEFAULT_GROUP, 'foo'], false],
+        ];
+    }
+
+    /**
+     * @dataProvider getGroupsFor
+     * @param $groups
+     * @param $propsVisited
+     * @param $resultingGroups
+     */
+    public function testGroupsFor($groups, $propsVisited, $resultingGroups)
+    {
+        $exclusion = new GroupsExclusionStrategy($groups);
+        $context = SerializationContext::create();
+
+        foreach ($propsVisited as $prop) {
+            $metadata = new StaticPropertyMetadata('stdClass', $prop, 'propVal');
+            $context->pushPropertyMetadata($metadata);
+        }
+
+        $groupsFor = $exclusion->getGroupsFor($context);
+        $this->assertEquals($groupsFor, $resultingGroups);
+    }
+
+    public function getGroupsFor()
+    {
+        return [
+            [['foo'], ['prop'], ['foo']],
+            [[], ['prop'], ['Default']],
+
+            [['foo', 'prop' => ['bar']], ['prop'], ['bar']],
+            [['foo', 'prop' => ['bar']], ['prop2'], ['foo', 'prop' => ['bar']]],
+
+            [['foo', 'prop' => ['bar']], ['prop', 'prop2'], ['Default']],
+
+            [['foo', 'prop' => ['xx', 'prop2' => ['def'], 'prop3' => ['def']]], ['prop', 'prop2', 'propB'], ['Default']],
+            [['foo', 'prop' => ['xx', 'prop2' => ['def', 'prop3' => ['def']]]], ['prop', 'prop2'], ['def', 'prop3' => ['def']]],
+
+            [['foo', 'prop' => ['prop2' => ['prop3' => ['def']]]], ['prop', 'prop2'], ['Default', 'prop3' => ['def']]],
         ];
     }
 }

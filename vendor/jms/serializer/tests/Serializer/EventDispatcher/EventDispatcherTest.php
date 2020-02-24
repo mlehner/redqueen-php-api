@@ -1,21 +1,5 @@
 <?php
 
-/*
- * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace JMS\Serializer\Tests\Serializer\EventDispatcher;
 
 use JMS\Serializer\EventDispatcher\Event;
@@ -29,8 +13,8 @@ class EventDispatcherTest extends \PHPUnit_Framework_TestCase
     /**
      * @var EventDispatcher
      */
-    private $dispatcher;
-    private $event;
+    protected $dispatcher;
+    protected $event;
 
     public function testHasListeners()
     {
@@ -158,11 +142,16 @@ class EventDispatcherTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->dispatcher = new EventDispatcher();
+        $this->dispatcher = $this->createEventDispatcher();
         $this->event = new ObjectEvent($this->getMockBuilder('JMS\Serializer\Context')->getMock(), new \stdClass(), array('name' => 'foo', 'params' => array()));
     }
 
-    private function dispatch($eventName, $class = 'Foo', $format = 'json', Event $event = null)
+    protected function createEventDispatcher()
+    {
+        return new EventDispatcher();
+    }
+
+    protected function dispatch($eventName, $class = 'Foo', $format = 'json', Event $event = null)
     {
         $this->dispatcher->dispatch($eventName, $class, $format, $event ?: $this->event);
     }

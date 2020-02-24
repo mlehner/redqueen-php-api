@@ -1,21 +1,5 @@
 <?php
 
-/*
- * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace JMS\Serializer\Tests\Fixtures;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -69,6 +53,14 @@ class BlogPost
     private $published;
 
     /**
+     * @Type("bool")
+     * @SerializedName("is_reviewed")
+     * @XmlAttribute
+     * @Groups({"post"})
+     */
+    private $reviewed;
+
+    /**
      * @Type("string")
      * @XmlAttribute(namespace="http://schemas.google.com/g/2005")
      * @Groups({"post"})
@@ -119,6 +111,7 @@ class BlogPost
         $this->author = $author;
         $this->publisher = $publisher;
         $this->published = false;
+        $this->reviewed = false;
         $this->comments = new ArrayCollection();
         $this->comments2 = new Sequence();
         $this->metadata = new Map();

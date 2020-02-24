@@ -1,21 +1,5 @@
 <?php
 
-/*
- * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace JMS\Serializer\Tests;
 
 use JMS\Serializer\DeserializationContext;
@@ -25,7 +9,10 @@ use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Naming\CamelCaseNamingStrategy;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
+use JMS\Serializer\Tests\Fixtures\ContextualNamingStrategy;
+use JMS\Serializer\Tests\Fixtures\Person;
 use JMS\Serializer\Tests\Fixtures\PersonSecret;
+use JMS\Serializer\Tests\Fixtures\PersonSecretWithVariables;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Filesystem\Filesystem;
@@ -228,6 +215,40 @@ class SerializerBuilderTest extends \PHPUnit_Framework_TestCase
         $person->name = 'mike';
 
         $this->assertEquals($json, $serializer->serialize($person, 'json'));
+    }
+
+    public function testExpressionEngineWhenDeserializing()
+    {
+        $language = new ExpressionLanguage();
+        $this->builder->setExpressionEvaluator(new ExpressionEvaluator($language));
+
+        $serializer = $this->builder->build();
+
+        $person = new PersonSecretWithVariables();
+        $person->gender = 'f';
+        $person->name = 'mike';
+
+        $serialized = $serializer->serialize($person, 'json');
+        $this->assertEquals('{"name":"mike","gender":"f"}', $serialized);
+
+        $object = $serializer->deserialize($serialized, PersonSecretWithVariables::class, 'json');
+        $this->assertEquals($person, $object);
+    }
+
+    public function testAdvancedNamingStrategy()
+    {
+        $this->builder->setAdvancedNamingStrategy(new ContextualNamingStrategy());
+        $serializer = $this->builder->build();
+
+        $person = new Person();
+        $person->name = "bar";
+
+        $json = $serializer->serialize($person, "json");
+        $this->assertEquals('{"NAME":"bar"}', $json);
+
+        $json = '{"Name": "bar"}';
+        $person = $serializer->deserialize($json, Person::class, "json");
+        $this->assertEquals("bar", $person->name);
     }
 
     protected function setUp()

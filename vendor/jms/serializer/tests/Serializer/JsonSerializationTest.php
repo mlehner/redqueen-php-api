@@ -1,21 +1,5 @@
 <?php
 
-/*
- * Copyright 2016 Johannes M. Schmitt <schmittjoh@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 namespace JMS\Serializer\Tests\Serializer;
 
 use JMS\Serializer\Context;
@@ -60,8 +44,8 @@ class JsonSerializationTest extends BaseSerializationTest
             $outputs['array_datetimes_object'] = '{"array_with_default_date_time":["2047-01-01T12:47:47+0000","2016-12-05T00:00:00+0000"],"array_with_formatted_date_time":["01.01.2047 12:47:47","05.12.2016 00:00:00"]}';
             $outputs['array_named_datetimes_object'] = '{"named_array_with_formatted_date":{"testdate1":"01.01.2047 12:47:47","testdate2":"05.12.2016 00:00:00"}}';
             $outputs['array_named_datetimeimmutables_object'] = '{"named_array_with_formatted_date":{"testdate1":"01.01.2047 12:47:47","testdate2":"05.12.2016 00:00:00"}}';
-            $outputs['blog_post'] = '{"id":"what_a_nice_id","title":"This is a nice title.","created_at":"2011-07-30T00:00:00+0000","is_published":false,"etag":"1edf9bf60a32d89afbb85b2be849e3ceed5f5b10","comments":[{"author":{"full_name":"Foo Bar"},"text":"foo"}],"comments2":[{"author":{"full_name":"Foo Bar"},"text":"foo"}],"metadata":{"foo":"bar"},"author":{"full_name":"Foo Bar"},"publisher":{"pub_name":"Bar Foo"},"tag":[{"name":"tag1"},{"name":"tag2"}]}';
-            $outputs['blog_post_unauthored'] = '{"id":"what_a_nice_id","title":"This is a nice title.","created_at":"2011-07-30T00:00:00+0000","is_published":false,"etag":"1edf9bf60a32d89afbb85b2be849e3ceed5f5b10","comments":[],"comments2":[],"metadata":{"foo":"bar"},"author":null,"publisher":null,"tag":null}';
+            $outputs['blog_post'] = '{"id":"what_a_nice_id","title":"This is a nice title.","created_at":"2011-07-30T00:00:00+0000","is_published":false,"is_reviewed":false,"etag":"1edf9bf60a32d89afbb85b2be849e3ceed5f5b10","comments":[{"author":{"full_name":"Foo Bar"},"text":"foo"}],"comments2":[{"author":{"full_name":"Foo Bar"},"text":"foo"}],"metadata":{"foo":"bar"},"author":{"full_name":"Foo Bar"},"publisher":{"pub_name":"Bar Foo"},"tag":[{"name":"tag1"},{"name":"tag2"}]}';
+            $outputs['blog_post_unauthored'] = '{"id":"what_a_nice_id","title":"This is a nice title.","created_at":"2011-07-30T00:00:00+0000","is_published":false,"is_reviewed":false,"etag":"1edf9bf60a32d89afbb85b2be849e3ceed5f5b10","comments":[],"comments2":[],"metadata":{"foo":"bar"},"author":null,"publisher":null,"tag":null}';
             $outputs['price'] = '{"price":3}';
             $outputs['currency_aware_price'] = '{"currency":"EUR","amount":2.34}';
             $outputs['order'] = '{"cost":{"price":12.34}}';
@@ -109,6 +93,9 @@ class JsonSerializationTest extends BaseSerializationTest
             $outputs['date_interval'] = '"PT45M"';
             $outputs['car'] = '{"km":5,"type":"car"}';
             $outputs['car_without_type'] = '{"km":5}';
+            $outputs['post'] = '{"type":"post","title":"Post Title"}';
+            $outputs['image_post'] = '{"type":"image_post","title":"Image Post Title"}';
+            $outputs['image_post_without_type'] = '{"title":"Image Post Title"}';
             $outputs['garage'] = '{"vehicles":[{"km":3,"type":"car"},{"km":1,"type":"moped"}]}';
             $outputs['tree'] = '{"tree":{"children":[{"children":[{"children":[],"foo":"bar"}],"foo":"bar"}],"foo":"bar"}}';
             $outputs['nullable_arrays'] = '{"empty_inline":[],"not_empty_inline":["not_empty_inline"],"empty_not_inline":[],"not_empty_not_inline":["not_empty_not_inline"],"empty_not_inline_skip":[],"not_empty_not_inline_skip":["not_empty_not_inline_skip"]}';
@@ -116,6 +103,7 @@ class JsonSerializationTest extends BaseSerializationTest
             $outputs['object_with_object_property'] = '{"foo": "bar", "author": {"full_name": "baz"}}';
             $outputs['author_expression'] = '{"my_first_name":"Ruud","last_name":"Kamphuis","id":123}';
             $outputs['maxdepth_skippabe_object'] = '{"a":{"xxx":"yyy"}}';
+            $outputs['type_casting'] = '{"as_string":"8"}';
         }
 
         if (!isset($outputs[$key])) {
