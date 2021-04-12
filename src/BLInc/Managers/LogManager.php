@@ -17,7 +17,7 @@ class LogManager extends TimestampedManager
     protected function transformRow(array $data)
     {
         $data['facilityCode'] = \hexdec(\substr($data['code'], 0, 2));
-        $data['cardNumber'] = \hexdec(\substr($data['code'], 3));
+        $data['cardNumber'] = \hexdec(\substr($data['code'], 2));
 
         return $data;
     }
