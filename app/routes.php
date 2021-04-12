@@ -178,7 +178,7 @@ $app->get('/api/cards', function(Silex\Application $app, Request $request) {
     $schedulesByCardId = [];
 
     foreach ($schedules as $schedule) {
-        if (isset($schedulesByCardId[$schedule['card_id']]) {
+        if (isset($schedulesByCardId[$schedule['card_id']])) {
             $schedulesByCardId[$schedule['card_id']] = [];
         }
 
