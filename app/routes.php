@@ -175,11 +175,15 @@ $app->get('/api/cards', function(Silex\Application $app, Request $request) {
         return $card['id'];
     }, $cards));
 
-    $cardIds = array_map(function (array $schedule) {
-        return $schedule['card_id'];
-    }, $schedules);
+    $schedulesByCardId = [];
 
-    $schedulesByCardId = array_combine($cardIds, $schedules);
+    foreach ($schedules as $schedule) {
+        if (isset($schedulesByCardId[$schedule['card_id']]) {
+            $schedulesByCardId[$schedule['card_id']] = [];
+        }
+
+        $schdulesByCardId[$schedule['card_id']][] = $schedule;
+    }
 
     $cards = array_map(function (array $card) use ($schedulesByCardId) {
         $cardSchedules = isset($schedulesByCardId[$card['id']]) ? $schedulesByCardId[$card['id']] : [];
