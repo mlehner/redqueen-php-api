@@ -19,6 +19,8 @@ class LogManager extends TimestampedManager
         $data['facilityCode'] = \hexdec(\substr($data['code'], 0, 2));
         $data['cardNumber'] = \hexdec(\substr($data['code'], 2));
 
+        $data['created_at'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
+
         return $data;
     }
 }
