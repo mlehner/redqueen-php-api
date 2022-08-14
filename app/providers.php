@@ -36,29 +36,29 @@ $app['logger'] = Pimple::share(function (Application $app): LoggerInterface {
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
-$app['validator.validator_service_ids'] = function() {
+$app['validator.validator_service_ids'] = function () {
     return array(
         UniqueValidator::class => 'validator.blinc_unique_validator',
     );
 };
 
-$app['validator.blinc_unique_validator'] = function(Silex\Application $app) {
+$app['validator.blinc_unique_validator'] = function(Silex\Application $app): UniqueValidator {
     return new UniqueValidator($app['db']);
 };
 
-$app['log.manager'] = Pimple::share(function(Silex\Application $app) {
+$app['log.manager'] = Pimple::share(function(Silex\Application $app): LogManager {
     return new LogManager($app['dbs']['log']);
 });
 
-$app['card.manager'] = Pimple::share(function(Silex\Application $app) {
+$app['card.manager'] = Pimple::share(function(Silex\Application $app): CardManager {
     return new CardManager($app['db']);
 });
 
-$app['schedule.manager'] = Pimple::share(function(Silex\Application $app) {
+$app['schedule.manager'] = Pimple::share(function(Silex\Application $app): ScheduleManager {
     return new ScheduleManager($app['db']);
 });
 
-$app['serializer'] = Pimple::share(function() {
+$app['serializer'] = Pimple::share(function(): SerializerInterface {
     return JMS\Serializer\SerializerBuilder::create()->configureHandlers(function(HandlerRegistryInterface $registry) {
         $registry->registerSubscribingHandler(new ConstraintViolationHandler());
         $registry->registerSubscribingHandler(new DateHandler());
