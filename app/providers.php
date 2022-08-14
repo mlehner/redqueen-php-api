@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use BLInc\Managers\CardManager;
 use BLInc\Managers\LogManager;
 use BLInc\Managers\ScheduleManager;

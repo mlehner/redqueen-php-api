@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BLInc\Managers;
 
 use Doctrine\DBAL\Connection;

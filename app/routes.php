@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use BLInc\Managers\ScheduleManager;
 use BLInc\Validator\Constraints\Unique;
 use Symfony\Component\HttpFoundation\JsonResponse;
