@@ -6,28 +6,17 @@ use BLInc\Managers\CardManager;
 use BLInc\Managers\LogManager;
 use BLInc\Managers\ScheduleManager;
 use BLInc\Validator\Constraints\UniqueValidator;
-use GuzzleHttp\Psr7\HttpFactory;
 use JMS\Serializer\Handler\ArrayCollectionHandler;
 use JMS\Serializer\Handler\DateHandler;
 use JMS\Serializer\Handler\HandlerRegistryInterface;
 use JMS\Serializer\Handler\ConstraintViolationHandler;
-use Jose\Component\Checker\AlgorithmChecker;
-use Jose\Component\Checker\AudienceChecker;
-use Jose\Component\Checker\ExpirationTimeChecker;
-use Jose\Component\Checker\HeaderCheckerManager;
-use Jose\Component\Checker\IssuedAtChecker;
-use Jose\Component\Checker\IssuerChecker;
-use Jose\Component\Checker\NotBeforeChecker;
-use Jose\Component\Core\AlgorithmManager;
-use Jose\Component\KeyManagement\JKUFactory;
-use Jose\Component\Signature\Algorithm\RS256;
-use Jose\Component\Signature\JWSTokenSupport;
-use Jose\Component\Signature\JWSVerifier;
-use Jose\Component\Signature\Serializer\CompactSerializer;
+use JMS\Serializer\SerializerInterface;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use GuzzleHttp\Client;
+
+require_once __DIR__ . '/jwt_providers.php';
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
   'dbs.options' => [
@@ -40,45 +29,8 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
   ]
 ]);
 
-$app->before(function (Request $request, Application $app): ?Response {
-  $jwtString = $request->cookies->get('CF_AUTHORIZATION') ?? $request->headers->get('Cf-Access-Jwt-Assertion');
-
-  if ($jwtString === null) {
-    return Response::create('', 401);
-  }
-
-  $client = new Client();
-  $requestFactory = new HttpFactory();
-
-  $keySet = (new JKUFactory($client, $requestFactory))->loadFromUrl(
-    getenv('REDQUEEN_JWT_KEYSET_URL'),
-  );
-
-  $rs256 = new RS256();
-
-  $algorithmManager = new AlgorithmManager([$rs256]);
-
-  $headerChecker = new HeaderCheckerManager([
-    new AudienceChecker(getenv('REDQUEEN_JWT_AUDIENCE')),
-    new AlgorithmChecker([$rs256->name()]),
-    new NotBeforeChecker(),
-    new IssuedAtChecker(),
-    new ExpirationTimeChecker(),
-    new IssuerChecker(getenv('REDQUEEN_JWT_ISSUER')),
-
-  ], [
-    new JWSTokenSupport(),
-  ]);
-
-  $jws = (new CompactSerializer())->unserialize($jwtString);
-  $headerChecker->check($jws, 0);
-
-  $verifier = new JWSVerifier($algorithmManager);
-  if (!$verifier->verifyWithKeySet($jws, $keySet, 0)) {
-    return Response::create('', 401);
-  }
-
-  return null;
+$app['logger'] = Pimple::share(function (Application $app): LoggerInterface {
+  return new Logger('app', [new ErrorLogHandler()]);
 });
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
