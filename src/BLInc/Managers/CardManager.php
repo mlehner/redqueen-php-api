@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BLInc\Managers;
 
+use BLInc\Model\CardSerialNumber;
+
 class CardManager extends TimestampedManager
 {
 
@@ -16,9 +18,13 @@ class CardManager extends TimestampedManager
     {
         $data['isActive'] = (bool) $data['isActive'];
 
-        if (preg_match('/^[\da-f]*$/i', $data['code'])) {
-          $data['facilityCode'] = \hexdec(\substr($data['code'], 0, 2));
-          $data['cardNumber'] = \hexdec(\substr($data['code'], 2));
+        try {
+            $csn = CardSerialNumber::createFromHex($data['code']);
+
+            $data['facilityCode'] = $csn->getFacilityCode();
+            $data['cardNumber'] = $csn->getCardNumber();
+        } catch (\Throwable $e) {
+            error_log(sprintf('Invalid Card CSN: %s', $data['code']));
         }
 
         return $data;

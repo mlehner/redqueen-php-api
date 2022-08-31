@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BLInc\Managers;
 
+use BLInc\Model\CardSerialNumber;
+
 class LogManager extends TimestampedManager
 {
     public function getTable()
@@ -18,8 +20,10 @@ class LogManager extends TimestampedManager
 
     protected function transformRow(array $data)
     {
-        $data['facilityCode'] = \hexdec(\substr($data['code'], 0, 2));
-        $data['cardNumber'] = \hexdec(\substr($data['code'], 2));
+        $csn = CardSerialNumber::createFromHex($data['code']);
+
+        $data['facilityCode'] = $csn->getFacilityCode();
+        $data['cardNumber'] = $csn->getCardNumber();
 
         $data['created_at'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
 

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
+use BLInc\Model\CardSerialNumber;
 
 $app['schedule.validation_constraints'] = function (Silex\Application $app) {
     return new Assert\Collection(array(
@@ -95,7 +96,7 @@ $app->put('/api/cards/{id}', function(Silex\Application $app, Request $request, 
     $constraints->allowMissingFields = true;
 
     if (isset($card['facilityCode'], $card['cardNumber'])) {
-        $card['code'] = dechex($card['facilityCode']) . dechex($card['cardNumber']);
+        $card['code'] = CardSerialNumber::createFromStrings($card['facilityCode'], $card['cardNumber'])->getHexCsn();
     }
 
     $violations = $app['validator']->validateValue($card, $constraints, 'edit');
@@ -133,7 +134,7 @@ $app->post('/api/cards', function(Silex\Application $app, Request $request) {
     }
 
     if (isset($card['facilityCode'], $card['cardNumber'])) {
-        $card['code'] = dechex($card['facilityCode']) . dechex($card['cardNumber']);
+        $card['code'] = CardSerialNumber::createFromStrings($card['facilityCode'], $card['cardNumber'])->getHexCsn();
     }
 
     $violations = $app['validator']->validateValue($card, $app['card.validation_constraints'], 'new');
