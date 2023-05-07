@@ -82,6 +82,10 @@ $app['jwt.jws_verifier'] = Pimple::share(function (Application $app): JWSVerifie
 });
 
 $app->before(function (Request $request, Application $app): ?Response {
+  if (getenv('REDQUEEN_JWT_DISABLED') === 'true') {
+    return null;
+  }
+
   $jwtString = $request->cookies->get('CF_AUTHORIZATION') ?? $request->headers->get('Cf-Access-Jwt-Assertion');
 
   if ($jwtString === null) {
