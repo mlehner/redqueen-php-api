@@ -21,7 +21,12 @@ class ScheduleManager extends TimestampedManager
     return array_map([$this, 'transformRow'], $this->dbal->fetchAll($query, array('cardIds' => $cardIds), ['cardIds' => Connection::PARAM_INT_ARRAY]));
   }
 
-  protected function transformRow(array $data)
+  protected function getFindAllQuery(): string
+  {
+      return 'SELECT s.*, COUNT(cs.card_id) AS number_of_cards FROM schedules s LEFT JOIN card_schedule cs on s.id = cs.schedule_id GROUP BY s.id';
+  }
+
+    protected function transformRow(array $data)
   {
     $data['mon'] = (bool)$data['mon'];
     $data['tue'] = (bool)$data['tue'];
