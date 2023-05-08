@@ -25,7 +25,8 @@ class LogManager extends TimestampedManager
         $data['facilityCode'] = $csn->getFacilityCode();
         $data['cardNumber'] = $csn->getCardNumber();
 
-        $data['created_at'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
+        $data['createdAt'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
+        unset($data['created_at']);
 
         return $data;
     }
