@@ -29,6 +29,10 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
   ]
 ]);
 
+$app->error(function (\Throwable $e) use ($app): void {
+  $app['logger']->error(sprintf('Exception catch: %s', $e->getMessage()), ['exception' => $e]);
+});
+
 $app['logger'] = Pimple::share(function (Application $app): LoggerInterface {
   return new Logger('app', [new ErrorLogHandler()]);
 });
