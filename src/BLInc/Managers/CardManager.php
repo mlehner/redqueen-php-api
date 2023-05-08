@@ -56,6 +56,8 @@ class CardManager extends TimestampedManager
             }
         }
 
+        $data['isActive'] = $data['isActive'] ? 1 : 0;
+
         parent::update($id, $data);
     }
 

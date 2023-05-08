@@ -26,7 +26,7 @@ class ScheduleManager extends TimestampedManager
       return 'SELECT s.*, COUNT(cs.card_id) AS number_of_cards FROM schedules s LEFT JOIN card_schedule cs on s.id = cs.schedule_id GROUP BY s.id';
   }
 
-    protected function transformRow(array $data)
+  protected function transformRow(array $data)
   {
     $data['mon'] = (bool)$data['mon'];
     $data['tue'] = (bool)$data['tue'];
@@ -37,6 +37,19 @@ class ScheduleManager extends TimestampedManager
     $data['sun'] = (bool)$data['sun'];
 
     return $data;
+  }
+
+  public function update($id, array $data)
+  {
+    $data['mon'] = $data['mon'] ? 1 : 0;
+    $data['tue'] = $data['tue'] ? 1 : 0;
+    $data['wed'] = $data['wed'] ? 1 : 0;
+    $data['thu'] = $data['thu'] ? 1 : 0;
+    $data['fri'] = $data['fri'] ? 1 : 0;
+    $data['sat'] = $data['sat'] ? 1 : 0;
+    $data['sun'] = $data['sun'] ? 1 : 0;
+
+    return parent::update($id, $data);
   }
 
   public function getTable()
