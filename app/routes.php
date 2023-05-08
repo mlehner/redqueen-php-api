@@ -205,9 +205,18 @@ $app->get('/api/cards', function(Silex\Application $app, Request $request) {
 })->bind('get_cards');
 
 $app->get('/api/logs', function(Silex\Application $app, Request $request) {
-    $logs = $app['log.manager']->findAll();
+  if ($request->query->has('since')) {
+    $since = $request->query->get('since');
+    $sinceDateTime = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $since);
 
-    return $app->json(['items' => $logs, 'count' => count($logs)]);
+    if (!$sinceDateTime instanceof \DateTimeInterface) {
+      return $app->json(['message' => 'Invalid since = ' . $since], 400);
+    }
+  }
+
+  $logs = $app['log.manager']->findLatestSince($sinceDateTime ?? null);
+
+  return $app->json(['items' => $logs, 'count' => count($logs)]);
 })->bind('get_logs');
 
 $app->match('/api/schedules', function() {
