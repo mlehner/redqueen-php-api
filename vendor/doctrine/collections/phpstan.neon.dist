@@ -1,17 +1,11 @@
 parameters:
-    level: 3
+    level: 8
     paths:
         - lib
     ignoreErrors:
-        # Making classes final as suggested would be a BC-break
         -
-            message: '~Unsafe usage of new static\(\)\.~'
-            paths:
-                - 'lib/Doctrine/Common/Collections/ArrayCollection.php'
-                - 'lib/Doctrine/Common/Collections/Criteria.php'
-        -
-            message: '~Array \(array\<TKey of \(int\|string\), T\>\) does not accept key int\.~'
+            message: '~Parameter #1 \$key of method Doctrine\\Common\\Collections\\ArrayCollection<TKey of \(int\|string\),T>::set\(\) expects TKey of \(int\|string\), int\|string given\.~'
             path: 'lib/Doctrine/Common/Collections/ArrayCollection.php'
-
-        # This class is new in PHP 8.1 and PHPStan does not know it yet.
-        - '/Attribute class ReturnTypeWillChange does not exist./'
+        -
+            message: '~Cannot call method .* on Doctrine\\Common\\Collections\\Collection<TKey of \(int\|string\), T>\|null\.~'
+            path: 'lib/Doctrine/Common/Collections/AbstractLazyCollection.php'
