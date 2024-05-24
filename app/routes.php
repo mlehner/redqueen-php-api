@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use BLInc\Controller\DoorController;
 use BLInc\Managers\ScheduleManager;
 use BLInc\Validator\Constraints\Unique;
+use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -315,3 +317,6 @@ $app->get('/api/schedules', function(Silex\Application $app, Request $request) {
 
     return $app->json(['items' => $schedules, 'count' => count($schedules)]);
 })->bind('get_schedules');
+
+$app->get('/api/doors', [$app[DoorController::class], 'getDoors'])->bind('get_doors');
+$app->post('/api/doors', [$app[DoorController::class], 'postDoor'])->bind('post_door');

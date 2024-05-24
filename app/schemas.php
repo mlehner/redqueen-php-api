@@ -34,6 +34,7 @@ $scheduleTable->addColumn('sat', 'boolean', ['unsigned' => true, 'notnull' => tr
 $scheduleTable->addColumn('sun', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
 $scheduleTable->addColumn('startTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('endTime', 'time', ['notnull' => true]);
+$scheduleTable->addColumn('authenticationMode', 'string', ['length' => 10, 'default' => 'card_pin', 'notnull' => true]);
 $scheduleTable->addColumn('created_at', 'datetime', ['notnull' => true]);
 $scheduleTable->addColumn('updated_at', 'datetime', ['notnull' => true]);
 
@@ -42,8 +43,26 @@ $scheduleTable->setPrimaryKey(['id']);
 $cardScheduleTable = $primarySchema->createTable('card_schedule');
 $cardScheduleTable->addColumn('card_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
 $cardScheduleTable->addColumn('schedule_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
+$cardScheduleTable->addColumn('created_at', 'datetime', ['notnull' => true]);
 
 $cardScheduleTable->setPrimaryKey(['card_id', 'schedule_id']);
+
+$doorTable = $primarySchema->createTable('doors');
+
+$doorTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
+$doorTable->addColumn('name', 'string', ['length' => 255, 'notnull' => true]);
+$doorTable->addColumn('identifier', 'string', ['length' => 255, 'notnull' => true]);
+$doorTable->addColumn('created_at', 'datetime', ['notnull' => true]);
+$doorTable->addColumn('updated_at', 'datetime', ['notnull' => true]);
+
+$doorTable->setPrimaryKey(['id']);
+
+$doorScheduleTable = $primarySchema->createTable('door_schedule');
+$doorScheduleTable->addColumn('door_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
+$doorScheduleTable->addColumn('schedule_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
+$doorScheduleTable->addColumn('created_at', 'datetime', ['notnull' => true]);
+
+$doorScheduleTable->setPrimaryKey(['door_id', 'schedule_id']);
 
 $logSchema = new Schema();
 

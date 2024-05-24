@@ -8,7 +8,6 @@ use BLInc\Model\CardSerialNumber;
 
 class CardManager extends TimestampedManager
 {
-
     public function getTable()
     {
         return 'cards';
