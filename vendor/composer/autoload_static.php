@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitabf708296b071cf20b94ec9d92d33c82
+class ComposerStaticInit03d2328850a24520ba161b5b08aa83b7
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -27,6 +27,7 @@ class ComposerStaticInitabf708296b071cf20b94ec9d92d33c82
             'Symfony\\Component\\HttpKernel\\' => 29,
             'Symfony\\Component\\HttpFoundation\\' => 33,
             'Symfony\\Component\\EventDispatcher\\' => 34,
+            'Symfony\\Component\\Dotenv\\' => 25,
             'Symfony\\Component\\Debug\\' => 24,
             'Symfony\\Component\\Cache\\' => 24,
             'Silex\\' => 6,
@@ -122,6 +123,10 @@ class ComposerStaticInitabf708296b071cf20b94ec9d92d33c82
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
+        'Symfony\\Component\\Dotenv\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/dotenv',
+        ),
         'Symfony\\Component\\Debug\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/debug',
@@ -144,8 +149,8 @@ class ComposerStaticInitabf708296b071cf20b94ec9d92d33c82
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -1421,6 +1426,13 @@ class ComposerStaticInitabf708296b071cf20b94ec9d92d33c82
         'Symfony\\Component\\Debug\\FatalErrorHandler\\FatalErrorHandlerInterface' => __DIR__ . '/..' . '/symfony/debug/FatalErrorHandler/FatalErrorHandlerInterface.php',
         'Symfony\\Component\\Debug\\FatalErrorHandler\\UndefinedFunctionFatalErrorHandler' => __DIR__ . '/..' . '/symfony/debug/FatalErrorHandler/UndefinedFunctionFatalErrorHandler.php',
         'Symfony\\Component\\Debug\\FatalErrorHandler\\UndefinedMethodFatalErrorHandler' => __DIR__ . '/..' . '/symfony/debug/FatalErrorHandler/UndefinedMethodFatalErrorHandler.php',
+        'Symfony\\Component\\Dotenv\\Command\\DebugCommand' => __DIR__ . '/..' . '/symfony/dotenv/Command/DebugCommand.php',
+        'Symfony\\Component\\Dotenv\\Command\\DotenvDumpCommand' => __DIR__ . '/..' . '/symfony/dotenv/Command/DotenvDumpCommand.php',
+        'Symfony\\Component\\Dotenv\\Dotenv' => __DIR__ . '/..' . '/symfony/dotenv/Dotenv.php',
+        'Symfony\\Component\\Dotenv\\Exception\\ExceptionInterface' => __DIR__ . '/..' . '/symfony/dotenv/Exception/ExceptionInterface.php',
+        'Symfony\\Component\\Dotenv\\Exception\\FormatException' => __DIR__ . '/..' . '/symfony/dotenv/Exception/FormatException.php',
+        'Symfony\\Component\\Dotenv\\Exception\\FormatExceptionContext' => __DIR__ . '/..' . '/symfony/dotenv/Exception/FormatExceptionContext.php',
+        'Symfony\\Component\\Dotenv\\Exception\\PathException' => __DIR__ . '/..' . '/symfony/dotenv/Exception/PathException.php',
         'Symfony\\Component\\EventDispatcher\\ContainerAwareEventDispatcher' => __DIR__ . '/..' . '/symfony/event-dispatcher/ContainerAwareEventDispatcher.php',
         'Symfony\\Component\\EventDispatcher\\Debug\\TraceableEventDispatcher' => __DIR__ . '/..' . '/symfony/event-dispatcher/Debug/TraceableEventDispatcher.php',
         'Symfony\\Component\\EventDispatcher\\Debug\\TraceableEventDispatcherInterface' => __DIR__ . '/..' . '/symfony/event-dispatcher/Debug/TraceableEventDispatcherInterface.php',
@@ -1892,10 +1904,10 @@ class ComposerStaticInitabf708296b071cf20b94ec9d92d33c82
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitabf708296b071cf20b94ec9d92d33c82::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitabf708296b071cf20b94ec9d92d33c82::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitabf708296b071cf20b94ec9d92d33c82::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitabf708296b071cf20b94ec9d92d33c82::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$classMap;
 
         }, null, ClassLoader::class);
     }
