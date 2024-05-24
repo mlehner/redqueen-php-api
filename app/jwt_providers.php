@@ -50,7 +50,7 @@ $app['jwt.http_client'] = Pimple::share(function (Application $app): ClientInter
 
 $app['jwt.keyset'] = Pimple::share(function (Application $app): JWKSet {
   return (new JKUFactory($app['jwt.http_client'], new HttpFactory()))->loadFromUrl(
-    getenv('REDQUEEN_JWT_KEYSET_URL'),
+    $_ENV['REDQUEEN_JWT_KEYSET_URL'],
   );
 });
 
@@ -68,11 +68,11 @@ $app['jwt.header_checker'] = Pimple::share(function (Application $app): HeaderCh
 
 $app['jwt.claim_checker'] = Pimple::share(function (Application $app): ClaimCheckerManager {
   return new ClaimCheckerManager([
-    new AudienceChecker(getenv('REDQUEEN_JWT_AUDIENCE')),
+    new AudienceChecker($_ENV['REDQUEEN_JWT_AUDIENCE']),
     new NotBeforeChecker(),
     new IssuedAtChecker(),
     new ExpirationTimeChecker(),
-    new IssuerChecker([getenv('REDQUEEN_JWT_ISSUER')]),
+    new IssuerChecker([$_ENV['REDQUEEN_JWT_ISSUER']]),
   ]);
 });
 
@@ -82,7 +82,7 @@ $app['jwt.jws_verifier'] = Pimple::share(function (Application $app): JWSVerifie
 });
 
 $app->before(function (Request $request, Application $app): ?Response {
-  if (getenv('REDQUEEN_JWT_DISABLED') === 'true') {
+  if ($_ENV['REDQUEEN_JWT_DISABLED'] === 'true') {
     return null;
   }
 

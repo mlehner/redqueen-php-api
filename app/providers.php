@@ -21,10 +21,10 @@ require_once __DIR__ . '/jwt_providers.php';
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
   'dbs.options' => [
     'primary' => [
-      'url' => getenv('REDQUEEN_DB_URL'),
+      'url' => $_ENV['REDQUEEN_DB_URL'],
     ],
     'log' => [
-      'url' => getenv('REDQUEEN_LOG_DB_URL'),
+      'url' => $_ENV['REDQUEEN_LOG_DB_URL'],
     ]
   ]
 ]);

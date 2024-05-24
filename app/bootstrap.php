@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Dotenv\Dotenv;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
+$dotenv = new Dotenv();
+$dotenv->loadEnv(__DIR__.'/../.env');
+
 $app = new Silex\Application();
-$app['debug'] = isset($_SERVER['APP_DEBUG']) ? (bool) $_SERVER['APP_DEBUG'] : (isset($_ENV['APP_DEBUG']) ? (bool) $_ENV['APP_DEBUG'] : false);
+$app['debug'] = $_ENV['APP_DEBUG'];
 
 require_once __DIR__ . '/providers.php';
