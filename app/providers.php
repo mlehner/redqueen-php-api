@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BLInc\Controller\DoorController;
+use BLInc\Controller\ScheduleController;
 use BLInc\Managers\CardManager;
 use BLInc\Managers\DoorManager;
 use BLInc\Managers\LogManager;
@@ -62,6 +63,10 @@ $app['card.manager'] = Pimple::share(function(Silex\Application $app): CardManag
 
 $app['schedule.manager'] = Pimple::share(function(Silex\Application $app): ScheduleManager {
     return new ScheduleManager($app['db']);
+});
+
+$app[ScheduleController::class] = Pimple::share(function (Silex\Application $app): ScheduleController {
+  return new ScheduleController($app['schedule.manager']);
 });
 
 $app[DoorManager::class] = Pimple::share(function(Silex\Application $app): DoorManager {

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use BLInc\Controller\DoorController;
+use BLInc\Controller\ScheduleController;
 use BLInc\Managers\ScheduleManager;
 use BLInc\Validator\Constraints\Unique;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -311,11 +312,7 @@ $app->get('/api/schedules/{id}', function(Silex\Application $app, Request $reque
     return $app->json($schedule);
 })->bind('get_schedule');
 
-$app->get('/api/schedules', function(Silex\Application $app, Request $request) {
-    $schedules = $app['schedule.manager']->findAll();
-
-    return $app->json(['items' => $schedules, 'count' => count($schedules)]);
-})->bind('get_schedules');
+$app->get('/api/schedules', [$app[ScheduleController::class], 'getSchedules'])->bind('get_schedules');
 
 $app->get('/api/doors', [$app[DoorController::class], 'getDoors'])->bind('get_doors');
 $app->post('/api/doors', [$app[DoorController::class], 'postDoor'])->bind('post_door');
