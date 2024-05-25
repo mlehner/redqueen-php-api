@@ -7,7 +7,7 @@ use Symfony\Component\Dotenv\Dotenv;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = new Dotenv();
-$dotenv->loadEnv(__DIR__.'/../.env');
+$dotenv->bootEnv(__DIR__.'/../.env');
 
 $app = new Silex\Application();
 $app['debug'] = $_ENV['APP_DEBUG'];
