@@ -302,13 +302,18 @@ class ComposerStaticInit03d2328850a24520ba161b5b08aa83b7
 
     public static $classMap = array (
         'BLInc\\Controller\\DoorController' => __DIR__ . '/../..' . '/src/BLInc/Controller/DoorController.php',
+        'BLInc\\Controller\\ScheduleController' => __DIR__ . '/../..' . '/src/BLInc/Controller/ScheduleController.php',
         'BLInc\\Managers\\CardManager' => __DIR__ . '/../..' . '/src/BLInc/Managers/CardManager.php',
         'BLInc\\Managers\\DoorManager' => __DIR__ . '/../..' . '/src/BLInc/Managers/DoorManager.php',
         'BLInc\\Managers\\LogManager' => __DIR__ . '/../..' . '/src/BLInc/Managers/LogManager.php',
         'BLInc\\Managers\\ManagerInterface' => __DIR__ . '/../..' . '/src/BLInc/Managers/ManagerInterface.php',
         'BLInc\\Managers\\ScheduleManager' => __DIR__ . '/../..' . '/src/BLInc/Managers/ScheduleManager.php',
         'BLInc\\Managers\\TimestampedManager' => __DIR__ . '/../..' . '/src/BLInc/Managers/TimestampedManager.php',
+        'BLInc\\Migration\\SchemaLoader' => __DIR__ . '/../..' . '/src/BLInc/Migration/SchemaLoader.php',
+        'BLInc\\Migration\\SchemaTool' => __DIR__ . '/../..' . '/src/BLInc/Migration/SchemaTool.php',
         'BLInc\\Model\\CardSerialNumber' => __DIR__ . '/../..' . '/src/BLInc/Model/CardSerialNumber.php',
+        'BLInc\\Test\\TestClientTrait' => __DIR__ . '/../..' . '/src/BLInc/Test/TestClientTrait.php',
+        'BLInc\\Test\\TestDatabaseTrait' => __DIR__ . '/../..' . '/src/BLInc/Test/TestDatabaseTrait.php',
         'BLInc\\Validator\\Constraints\\Unique' => __DIR__ . '/../..' . '/src/BLInc/Validator/Constraints/Unique.php',
         'BLInc\\Validator\\Constraints\\UniqueValidator' => __DIR__ . '/../..' . '/src/BLInc/Validator/Constraints/UniqueValidator.php',
         'Base64Url\\Base64Url' => __DIR__ . '/..' . '/spomky-labs/base64url/src/Base64Url.php',

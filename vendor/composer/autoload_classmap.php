@@ -7,13 +7,18 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'BLInc\\Controller\\DoorController' => $baseDir . '/src/BLInc/Controller/DoorController.php',
+    'BLInc\\Controller\\ScheduleController' => $baseDir . '/src/BLInc/Controller/ScheduleController.php',
     'BLInc\\Managers\\CardManager' => $baseDir . '/src/BLInc/Managers/CardManager.php',
     'BLInc\\Managers\\DoorManager' => $baseDir . '/src/BLInc/Managers/DoorManager.php',
     'BLInc\\Managers\\LogManager' => $baseDir . '/src/BLInc/Managers/LogManager.php',
     'BLInc\\Managers\\ManagerInterface' => $baseDir . '/src/BLInc/Managers/ManagerInterface.php',
     'BLInc\\Managers\\ScheduleManager' => $baseDir . '/src/BLInc/Managers/ScheduleManager.php',
     'BLInc\\Managers\\TimestampedManager' => $baseDir . '/src/BLInc/Managers/TimestampedManager.php',
+    'BLInc\\Migration\\SchemaLoader' => $baseDir . '/src/BLInc/Migration/SchemaLoader.php',
+    'BLInc\\Migration\\SchemaTool' => $baseDir . '/src/BLInc/Migration/SchemaTool.php',
     'BLInc\\Model\\CardSerialNumber' => $baseDir . '/src/BLInc/Model/CardSerialNumber.php',
+    'BLInc\\Test\\TestClientTrait' => $baseDir . '/src/BLInc/Test/TestClientTrait.php',
+    'BLInc\\Test\\TestDatabaseTrait' => $baseDir . '/src/BLInc/Test/TestDatabaseTrait.php',
     'BLInc\\Validator\\Constraints\\Unique' => $baseDir . '/src/BLInc/Validator/Constraints/Unique.php',
     'BLInc\\Validator\\Constraints\\UniqueValidator' => $baseDir . '/src/BLInc/Validator/Constraints/UniqueValidator.php',
     'Base64Url\\Base64Url' => $vendorDir . '/spomky-labs/base64url/src/Base64Url.php',
