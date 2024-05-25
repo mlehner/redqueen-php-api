@@ -69,7 +69,7 @@ $app[DoorManager::class] = Pimple::share(function(Silex\Application $app): DoorM
 });
 
 $app[DoorController::class] = Pimple::share(function(Application $app): DoorController {
-  return new DoorController($app[DoorManager::class], $app['validator']);
+  return new DoorController($app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
 });
 
 $app['serializer'] = Pimple::share(function(): SerializerInterface {
