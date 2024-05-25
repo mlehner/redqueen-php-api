@@ -4,7 +4,6 @@
          bootstrap="phpunit-bootstrap.php"
          cacheResultFile=".phpunit.cache/test-results"
          executionOrder="depends,defects"
-         forceCoversAnnotation="true"
          beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
@@ -20,5 +19,4 @@
     <php>
         <env name="APP_ENV" value="test" />
     </php>
-
 </phpunit>

@@ -12,9 +12,6 @@ final class DoorApiTest extends TestCase
   use TestDatabaseTrait;
   use TestClientTrait;
 
-  /**
-   * @covers \BLInc\Controller\DoorController::getDoors
-   */
   public function testGetDoors(): void
   {
     self::loadData();
@@ -27,9 +24,6 @@ final class DoorApiTest extends TestCase
     self::assertJsonStringEqualsJsonString(json_encode(self::getDefaultDoorList()), $client->getResponse()->getContent());
   }
 
-  /**
-   * @covers \BLInc\Controller\DoorController::getDoor
-   */
   public function testGetDoor(): void
   {
     self::loadData();
@@ -50,9 +44,6 @@ final class DoorApiTest extends TestCase
     ]), $client->getResponse()->getContent());
   }
 
-  /**
-   * @covers \BLInc\Controller\DoorController::postDoor
-   */
   public function testPostDoor(): void
   {
     self::loadData();
@@ -89,9 +80,6 @@ final class DoorApiTest extends TestCase
     self::assertJsonStringEqualsJsonString(json_encode($doors), $client->getResponse()->getContent());
   }
 
-  /**
-   * @covers \BLInc\Controller\DoorController::putDoor
-   */
   public function testPutDoor(): void
   {
     self::loadData();
