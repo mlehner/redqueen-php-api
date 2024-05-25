@@ -2,41 +2,22 @@
 
 declare(strict_types=1);
 
+use BLInc\Test\TestClientTrait;
 use BLInc\Test\TestDatabaseTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Client;
 
 final class DoorApiTest extends TestCase
 {
   use TestDatabaseTrait;
-
-  public static function setUpBeforeClass(): void
-  {
-    self::rebuildDatabase();
-  }
-  public function setUp(): void
-  {
-    $connection = self::beforeTest();
-
-    $connection->query(<<<'SQL'
-INSERT INTO `doors` VALUES
-(null, 'Door 1', 'InteriorDoor', '2024-05-01 08:00:00', '2024-05-01 08:00:00'),
-(null, 'Door 2', 'ExteriorDoor', '2024-05-01 08:00:00', '2024-05-01 08:00:00'),
-(null, 'Door 3', 'OfficeDoor', '2024-05-01 08:00:00', '2024-05-01 08:00:00')
-SQL);
-  }
-
-  public function tearDown(): void
-  {
-    self::afterTest();
-  }
+  use TestClientTrait;
 
   /**
    * @covers \BLInc\Controller\DoorController::getDoors
    */
   public function testGetDoors(): void
   {
+    self::loadData();
     $client = self::createClient();
 
     $client->request(Request::METHOD_GET, '/api/doors');
@@ -51,6 +32,7 @@ SQL);
    */
   public function testGetDoor(): void
   {
+    self::loadData();
     $client = self::createClient();
 
     $client->request(Request::METHOD_GET, '/api/doors/5');
@@ -73,6 +55,7 @@ SQL);
    */
   public function testPostDoor(): void
   {
+    self::loadData();
     $client = self::createClient();
 
     $client->request(Request::METHOD_POST, '/api/doors', [], [], [], json_encode([
@@ -111,6 +94,7 @@ SQL);
    */
   public function testPutDoor(): void
   {
+    self::loadData();
     $client = self::createClient();
 
     $client->request(Request::METHOD_PUT, '/api/doors/5', [], [], [], json_encode([
@@ -120,11 +104,14 @@ SQL);
     self::assertSame(404, $client->getResponse()->getStatusCode());
   }
 
-  private static function createClient(): Client
+  private static function loadData(): void
   {
-    global $app;
-
-    return new Client($app);
+    self::primaryConnection()->query(<<<'SQL'
+INSERT INTO `doors` VALUES
+(null, 'Door 1', 'InteriorDoor', '2024-05-01 08:00:00', '2024-05-01 08:00:00'),
+(null, 'Door 2', 'ExteriorDoor', '2024-05-01 08:00:00', '2024-05-01 08:00:00'),
+(null, 'Door 3', 'OfficeDoor', '2024-05-01 08:00:00', '2024-05-01 08:00:00')
+SQL);
   }
 
   private static function getDefaultDoorList(): array
