@@ -10,7 +10,21 @@ use Doctrine\DBAL\Connection;
 
 trait TestDatabaseTrait
 {
-  public static function rebuildDatabase(): void
+  public static function setUpBeforeClass(): void
+  {
+    self::rebuildDatabase();
+  }
+  public function setUp(): void
+  {
+    self::beforeTest();
+  }
+
+  public function tearDown(): void
+  {
+    self::afterTest();
+  }
+
+  private static function rebuildDatabase(): void
   {
     $primaryConnection = self::primaryConnection();
     $schemaTool = new SchemaTool($primaryConnection);
@@ -22,7 +36,7 @@ trait TestDatabaseTrait
     }
   }
 
-  public static function beforeTest(): Connection
+  private static function beforeTest(): Connection
   {
     $primaryConnection = self::primaryConnection();
 
@@ -35,7 +49,7 @@ trait TestDatabaseTrait
     return $primaryConnection;
   }
 
-  public static function afterTest(): Connection
+  private static function afterTest(): Connection
   {
     $primaryConnection = self::primaryConnection();
     $primaryConnection->rollBack();
@@ -43,7 +57,7 @@ trait TestDatabaseTrait
     return $primaryConnection;
   }
 
-  public static function primaryConnection(): Connection
+  private static function primaryConnection(): Connection
   {
     global $app;
     assert($app['db'] instanceof Connection);
