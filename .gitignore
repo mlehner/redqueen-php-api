@@ -1,3 +1,5 @@
 app/cache/
 /.env.local
 /.env.local.php
+.phpunit.cache
+.phpunit.result.cache
