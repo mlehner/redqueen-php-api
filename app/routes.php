@@ -236,6 +236,12 @@ $app->match('/api/schedules/{id}', function() {
 })->method('OPTIONS');
 
 $app->put('/api/schedules/{id}', function(Silex\Application $app, Request $request, $id) {
+    $schedule = $app['schedule.manager']->find($id);
+
+    if (!is_array($schedule)) {
+        throw new NotFoundHttpException();
+    }
+
     $content = $request->getContent();
 
     $schedule = json_decode($content, true);
