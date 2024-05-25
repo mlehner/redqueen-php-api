@@ -56,6 +56,7 @@ $doorTable->addColumn('created_at', 'datetime', ['notnull' => true]);
 $doorTable->addColumn('updated_at', 'datetime', ['notnull' => true]);
 
 $doorTable->setPrimaryKey(['id']);
+$doorTable->addUniqueIndex(['identifier']);
 
 $doorScheduleTable = $primarySchema->createTable('door_schedule');
 $doorScheduleTable->addColumn('door_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
