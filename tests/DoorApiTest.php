@@ -20,7 +20,6 @@ final class DoorApiTest extends TestCase
     $client->request(Request::METHOD_GET, '/api/doors');
     self::assertSame(200, $client->getResponse()->getStatusCode());
     self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
-    self::assertJson($client->getResponse()->getContent());
     self::assertJsonStringEqualsJsonString(json_encode(self::getDefaultDoorList()), $client->getResponse()->getContent());
   }
 
@@ -90,6 +89,27 @@ final class DoorApiTest extends TestCase
       'identifier' => 'Door 1',
     ]));
     self::assertSame(404, $client->getResponse()->getStatusCode());
+
+    $client->request(Request::METHOD_PUT, '/api/doors/3', [], [], [], json_encode([
+      'name' => 'Staff Office',
+      'identifier' => 'OfficeDoor',
+    ]));
+    self::assertSame(201, $client->getResponse()->getStatusCode());
+    self::assertSame('/api/doors/3', $client->getResponse()->headers->get('Location'));
+
+    $client->request(Request::METHOD_GET, '/api/doors/3');
+    self::assertSame(200, $client->getResponse()->getStatusCode());
+    self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+
+    $doorResponse = json_decode($client->getResponse()->getContent(), true);
+
+    self::assertJsonStringEqualsJsonString(json_encode([
+      'id' => '3',
+      'name' => 'Staff Office',
+      'identifier' => 'OfficeDoor',
+      'created_at' => '2024-05-01 08:00:00',
+      'updated_at' => $doorResponse['updated_at'],
+    ]), $client->getResponse()->getContent());
   }
 
   private static function loadData(): void
