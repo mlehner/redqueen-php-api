@@ -66,7 +66,7 @@ $app['schedule.manager'] = Pimple::share(function(Silex\Application $app): Sched
 });
 
 $app[ScheduleController::class] = Pimple::share(function (Silex\Application $app): ScheduleController {
-  return new ScheduleController($app['schedule.manager'], $app['validator'], $app['serializer'], $app['url_generator']);
+  return new ScheduleController($app['schedule.manager'], $app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
 });
 
 $app[DoorManager::class] = Pimple::share(function(Silex\Application $app): DoorManager {

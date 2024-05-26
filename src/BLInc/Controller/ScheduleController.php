@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BLInc\Controller;
 
+use BLInc\Managers\DoorManager;
 use BLInc\Managers\ScheduleManager;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,6 +20,8 @@ final class ScheduleController
 {
   private ScheduleManager $scheduleManager;
 
+  private DoorManager $doorManager;
+
   private ValidatorInterface $validator;
 
   private SerializerInterface $serializer;
@@ -27,9 +30,10 @@ final class ScheduleController
 
   private Constraint $constraint;
 
-  public function __construct(ScheduleManager $scheduleManager, ValidatorInterface $validator, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator)
+  public function __construct(ScheduleManager $scheduleManager, DoorManager $doorManager, ValidatorInterface $validator, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator)
   {
     $this->scheduleManager = $scheduleManager;
+    $this->doorManager = $doorManager;
     $this->validator = $validator;
     $this->serializer = $serializer;
     $this->urlGenerator = $urlGenerator;
@@ -45,6 +49,20 @@ final class ScheduleController
         'sun' => new Assert\Type(array('type' => 'boolean')),
         'startTime' => new Assert\Time(),
         'endTime' => new Assert\Time(),
+        'authenticationMode' => new Assert\Choice(array('choices' => array('card_pin' => 'Card & Pin', 'card' => 'Card Only'))),
+        'doors' => [
+          new Assert\Count(['min' => 1]),
+          new Assert\All([
+            new Assert\Collection([
+              'fields' => [
+                'id' => [
+                  new Assert\NotBlank(),
+                  // @TODO valid Door
+                ],
+              ],
+            ])
+          ])
+        ],
       )
     ));
   }
@@ -52,6 +70,33 @@ final class ScheduleController
   public function getSchedules(): Response
   {
     $schedules = $this->scheduleManager->findAll();
+
+    $doors = $this->doorManager->findBySchedules(array_map(function (array $schedule) {
+      return $schedule['id'];
+    }, $schedules));
+
+    $doorsByScheduleId = [];
+
+    foreach ($doors as $door) {
+      if (isset($doorsByScheduleId[$door['schedule_id']])) {
+        $doorsByScheduleId[$door['schedule_id']] = [];
+      }
+
+      $doorsByScheduleId[$door['schedule_id']][] = $door;
+    }
+
+    $schedules = array_map(function (array $schedule) use ($doorsByScheduleId) {
+      $scheduleDoors = $doorsByScheduleId[$schedule['id']] ?? [];
+
+      $schedule['doors'] = array_map(function (array $door) {
+        return [
+          'id' => $door['id'],
+          'name' => $door['name'],
+        ];
+      }, $scheduleDoors);
+
+      return $schedule;
+    }, $schedules);
 
     return new JsonResponse(['items' => $schedules, 'count' => count($schedules)]);
   }
@@ -62,6 +107,16 @@ final class ScheduleController
 
     if (!is_array($schedule)) {
       throw new NotFoundHttpException();
+    }
+
+    $doors = $this->doorManager->findBySchedules([$id]);
+
+    $schedule['doors'] = [];
+    foreach ($doors as $door) {
+      $schedule['doors'][] = [
+        'id' => $door['id'],
+        'name' => $door['name'],
+      ];
     }
 
     return new JSONResponse($schedule);

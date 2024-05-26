@@ -49,11 +49,116 @@ class ScheduleManager extends TimestampedManager
     $data['sat'] = $data['sat'] ? 1 : 0;
     $data['sun'] = $data['sun'] ? 1 : 0;
 
-    return parent::update($id, $data);
+    return $this->dbal->transactional(function () use ($id, $data) {
+      if (isset($data['doors'])) {
+        $doors = $data['doors'];
+        unset($data['doors']);
+
+        $doorIds = [];
+        foreach($doors as $door) {
+          $doorIds[] = $door['id'];
+        }
+
+        $currentDoorIds = $this->getDoorIds($id);
+
+        $doorsToRemove = array_diff($currentDoorIds, $doorIds);
+
+        foreach ($doorsToRemove as $removeId) {
+          $this->removeDoor($id, $removeId);
+        }
+
+        $doorsToAdd = array_diff($doorIds, $currentDoorIds);
+
+        foreach ($doorsToAdd as $addId) {
+          $this->addDoor($id, $addId);
+        }
+      }
+
+      return parent::update($id, $data);
+    });
+  }
+
+  public function create(array $data)
+  {
+    $doors = [];
+    if (isset($data['doors'])) {
+      $doors = $data['doors'];
+      unset($data['doors']);
+    }
+
+    $data['mon'] = $data['mon'] ? 1 : 0;
+    $data['tue'] = $data['tue'] ? 1 : 0;
+    $data['wed'] = $data['wed'] ? 1 : 0;
+    $data['thu'] = $data['thu'] ? 1 : 0;
+    $data['fri'] = $data['fri'] ? 1 : 0;
+    $data['sat'] = $data['sat'] ? 1 : 0;
+    $data['sun'] = $data['sun'] ? 1 : 0;
+
+    return $this->dbal->transactional(function () use ($data, $doors) {
+      $id = parent::create($data);
+
+      if (count($doors) > 0) {
+        foreach ($doors as $door) {
+          $this->addDoor($id, $door['id']);
+        }
+      }
+
+      return $id;
+    });
+  }
+
+  public function delete($id)
+  {
+    return $this->dbal->transactional(function () use ($id) {
+      $this->dbal->delete('door_schedule', ['schedule_id' => $id]);
+      parent::delete($id);
+    });
   }
 
   public function getTable()
   {
     return 'schedules';
+  }
+
+  protected function getDoorIds($id)
+  {
+    $query = 'SELECT door_id FROM door_schedule WHERE schedule_id = :scheduleId';
+
+    $rows = $this->dbal->fetchAll($query, array('scheduleId' => $id));
+
+    $ids = array();
+    foreach($rows as $row) {
+      $ids[] = $row['door_id'];
+    }
+
+    return $ids;
+  }
+
+  public function addDoor($id, $doorId)
+  {
+    $this->dbal->transactional(function () use ($id, $doorId) {
+      $doorIds = $this->getDoorIds($id);
+
+      if (false === in_array($doorId, $doorIds)) {
+        $this->dbal->insert('door_schedule', array(
+          'schedule_id' => $id,
+          'door_id' => $doorId,
+        ));
+      }
+    });
+  }
+
+  public function removeDoor($id, $doorId)
+  {
+    $this->dbal->transactional(function () use ($id, $doorId) {
+      $doorIds = $this->getDoorIds($id);
+
+      if (in_array($doorId, $doorIds)) {
+        $this->dbal->delete('door_schedule', array(
+          'schedule_id' => $id,
+          'door_id' => $doorId,
+        ));
+      }
+    });
   }
 }
