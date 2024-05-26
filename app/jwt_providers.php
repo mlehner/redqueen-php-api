@@ -33,81 +33,81 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 $app['jwt.http_client'] = Pimple::share(function (Application $app): ClientInterface {
-  $handlerStack = HandlerStack::create();
-  $handlerStack->push(new CacheMiddleware(
-    new PrivateCacheStrategy(
-      new Psr6CacheStorage(
-        new FilesystemAdapter()
-      )
-    )
-  ), 'cache');
+    $handlerStack = HandlerStack::create();
+    $handlerStack->push(new CacheMiddleware(
+        new PrivateCacheStrategy(
+            new Psr6CacheStorage(
+                new FilesystemAdapter()
+            )
+        )
+    ), 'cache');
 
-  return new Client([
-    'timeout' => 2,
-    'handler' => $handlerStack,
-  ]);
+    return new Client([
+        'timeout' => 2,
+        'handler' => $handlerStack,
+    ]);
 });
 
 $app['jwt.keyset'] = Pimple::share(function (Application $app): JWKSet {
-  return (new JKUFactory($app['jwt.http_client'], new HttpFactory()))->loadFromUrl(
-    $_ENV['REDQUEEN_JWT_KEYSET_URL'],
-  );
+    return (new JKUFactory($app['jwt.http_client'], new HttpFactory()))->loadFromUrl(
+        $_ENV['REDQUEEN_JWT_KEYSET_URL'],
+    );
 });
 
 $app['jwt.rs256_algorithm'] = Pimple::share(function (Application $app): RS256 {
-  return new RS256();
+    return new RS256();
 });
 
 $app['jwt.header_checker'] = Pimple::share(function (Application $app): HeaderCheckerManager {
-  return new HeaderCheckerManager([
-    new AlgorithmChecker([$app['jwt.rs256_algorithm']->name()]),
-  ], [
-    new JWSTokenSupport(),
-  ]);
+    return new HeaderCheckerManager([
+        new AlgorithmChecker([$app['jwt.rs256_algorithm']->name()]),
+    ], [
+        new JWSTokenSupport(),
+    ]);
 });
 
 $app['jwt.claim_checker'] = Pimple::share(function (Application $app): ClaimCheckerManager {
-  return new ClaimCheckerManager([
-    new AudienceChecker($_ENV['REDQUEEN_JWT_AUDIENCE']),
-    new NotBeforeChecker(),
-    new IssuedAtChecker(),
-    new ExpirationTimeChecker(),
-    new IssuerChecker([$_ENV['REDQUEEN_JWT_ISSUER']]),
-  ]);
+    return new ClaimCheckerManager([
+        new AudienceChecker($_ENV['REDQUEEN_JWT_AUDIENCE']),
+        new NotBeforeChecker(),
+        new IssuedAtChecker(),
+        new ExpirationTimeChecker(),
+        new IssuerChecker([$_ENV['REDQUEEN_JWT_ISSUER']]),
+    ]);
 });
 
 $app['jwt.jws_verifier'] = Pimple::share(function (Application $app): JWSVerifier {
-  $algorithmManager = new AlgorithmManager([$app['jwt.rs256_algorithm']]);
-  return new JWSVerifier($algorithmManager);
+    $algorithmManager = new AlgorithmManager([$app['jwt.rs256_algorithm']]);
+    return new JWSVerifier($algorithmManager);
 });
 
 $app->before(function (Request $request, Application $app): ?Response {
-  if ($_ENV['REDQUEEN_JWT_DISABLED'] === 'true') {
+    if ($_ENV['REDQUEEN_JWT_DISABLED'] === 'true') {
+        return null;
+    }
+
+    $jwtString = $request->cookies->get('CF_AUTHORIZATION') ?? $request->headers->get('Cf-Access-Jwt-Assertion');
+
+    if ($jwtString === null) {
+        return Response::create('', 401);
+    }
+
+    try {
+        $jws = (new CompactSerializer())->unserialize($jwtString);
+        $app['jwt.header_checker']->check($jws, 0, ['alg']);
+        $claims = json_decode($jws->getPayload(), true, JSON_THROW_ON_ERROR);
+        $app['jwt.claim_checker']->check($claims, ['aud', 'nbf', 'iat', 'exp', 'iss']);
+    } catch (InvalidClaimException $claimException) {
+        return Response::create(sprintf('Invalid Claim "%s"', $claimException->getClaim()), 401);
+    } catch (MissingMandatoryClaimException $claimException) {
+        return Response::create(sprintf('Missing Claims "%s"', implode('", "', $claimException->getClaims())), 401);
+    } catch (InvalidHeaderException $headerException) {
+        return Response::create(sprintf('Invalid Header "%s"', $headerException->getHeader()), 401);
+    }
+
+    if (!$app['jwt.jws_verifier']->verifyWithKeySet($jws, $app['jwt.keyset'], 0)) {
+        return Response::create('', 401);
+    }
+
     return null;
-  }
-
-  $jwtString = $request->cookies->get('CF_AUTHORIZATION') ?? $request->headers->get('Cf-Access-Jwt-Assertion');
-
-  if ($jwtString === null) {
-    return Response::create('', 401);
-  }
-
-  try {
-    $jws = (new CompactSerializer())->unserialize($jwtString);
-    $app['jwt.header_checker']->check($jws, 0, ['alg']);
-    $claims = json_decode($jws->getPayload(), true, JSON_THROW_ON_ERROR);
-    $app['jwt.claim_checker']->check($claims, ['aud', 'nbf', 'iat', 'exp', 'iss']);
-  } catch (InvalidClaimException $claimException) {
-    return Response::create(sprintf('Invalid Claim "%s"', $claimException->getClaim()) , 401);
-  } catch (MissingMandatoryClaimException $claimException) {
-    return Response::create(sprintf('Missing Claims "%s"', implode('", "', $claimException->getClaims())), 401);
-  } catch (InvalidHeaderException $headerException) {
-    return Response::create(sprintf('Invalid Header "%s"', $headerException->getHeader()), 401);
-  }
-
-  if (!$app['jwt.jws_verifier']->verifyWithKeySet($jws, $app['jwt.keyset'], 0)) {
-    return Response::create('', 401);
-  }
-
-  return null;
 });

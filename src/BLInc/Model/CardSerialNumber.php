@@ -33,7 +33,7 @@ final class CardSerialNumber
 
     public static function createFromStrings(string $facilityNumber, string $cardNumber): self
     {
-        return new self((int)$facilityNumber, (int)$cardNumber);
+        return new self((int) $facilityNumber, (int) $cardNumber);
     }
 
     public function __construct(int $facilityCode, int $cardNumber)

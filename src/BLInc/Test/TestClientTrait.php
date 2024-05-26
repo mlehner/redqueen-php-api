@@ -8,10 +8,10 @@ use Symfony\Component\HttpKernel\Client;
 
 trait TestClientTrait
 {
-  private static function createClient(): Client
-  {
-    global $app;
+    private static function createClient(): Client
+    {
+        global $app;
 
-    return new Client($app);
-  }
+        return new Client($app);
+    }
 }

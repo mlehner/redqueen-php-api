@@ -15,27 +15,27 @@ class LogManager extends TimestampedManager
 
     public function findLatestSince(?\DateTimeInterface $sinceDateTime = null): array
     {
-      if ($sinceDateTime === null) {
-        $sinceDateTime = new \DateTimeImmutable();
-      }
+        if ($sinceDateTime === null) {
+            $sinceDateTime = new \DateTimeImmutable();
+        }
 
-      $rows = $this->dbal->fetchAll(
-        <<<SQL
-        SELECT
-            l.id, l.code, l.validPin, l.created_at, MAX(c.name) AS name
-        FROM `logs` AS l
-            LEFT JOIN `cards` AS c ON (l.code = c.code)
-        WHERE l.created_at < :sinceDateTime
-        GROUP BY l.id
-        ORDER BY l.created_at
-        DESC LIMIT 100
-SQL,
-        [
-          'sinceDateTime' => $sinceDateTime->format('Y-m-d H:i:s')
-        ]
-      );
+        $rows = $this->dbal->fetchAll(
+            <<<SQL
+                        SELECT
+                            l.id, l.code, l.validPin, l.created_at, MAX(c.name) AS name
+                        FROM `logs` AS l
+                            LEFT JOIN `cards` AS c ON (l.code = c.code)
+                        WHERE l.created_at < :sinceDateTime
+                        GROUP BY l.id
+                        ORDER BY l.created_at
+                        DESC LIMIT 100
+                SQL,
+            [
+                'sinceDateTime' => $sinceDateTime->format('Y-m-d H:i:s'),
+            ]
+        );
 
-      return array_map([$this, 'transformRow'], $rows);
+        return array_map([$this, 'transformRow'], $rows);
     }
 
     protected function getFindAllQuery(): string

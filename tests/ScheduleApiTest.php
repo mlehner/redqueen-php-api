@@ -9,336 +9,337 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class ScheduleApiTest extends TestCase
 {
-  use TestDatabaseTrait;
-  use TestClientTrait;
+    use TestDatabaseTrait;
+    use TestClientTrait;
 
-  public function testGetSchedules(): void
-  {
-    self::loadData();
-    $client = self::createClient();
+    public function testGetSchedules(): void
+    {
+        self::loadData();
+        $client = self::createClient();
 
-    $client->request(Request::METHOD_GET, '/api/schedules');
-    self::assertEquals(200, $client->getResponse()->getStatusCode());
-    self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
-    self::assertJsonStringEqualsJsonString(json_encode(self::getDefaultScheduleList()), $client->getResponse()->getContent());
-  }
+        $client->request(Request::METHOD_GET, '/api/schedules');
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJsonStringEqualsJsonString(json_encode(self::getDefaultScheduleList()), $client->getResponse()->getContent());
+    }
 
-  public function testGetSchedule(): void
-  {
-    self::loadData();
+    public function testGetSchedule(): void
+    {
+        self::loadData();
 
-    $client = self::createClient();
+        $client = self::createClient();
 
-    $client->request(Request::METHOD_GET, '/api/schedules/10');
-    self::assertEquals(404, $client->getResponse()->getStatusCode());
+        $client->request(Request::METHOD_GET, '/api/schedules/10');
+        self::assertEquals(404, $client->getResponse()->getStatusCode());
 
-    $client->request(Request::METHOD_GET, '/api/schedules/1');
-    self::assertEquals(200, $client->getResponse()->getStatusCode());
-    self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
-    self::assertJsonStringEqualsJsonString(json_encode([
-      'id' => '1',
-      'name' => '24/7 Exterior',
-      'mon' => true,
-      'tue' => true,
-      'wed' => true,
-      'thu' => true,
-      'fri' => true,
-      'sat' => true,
-      'sun' => true,
-      'startTime' => '00:00:00',
-      'endTime' => '23:59:59',
-      'created_at' => '2024-05-12 08:00:00',
-      'updated_at' => '2024-05-12 08:00:00',
-      'authenticationMode' => 'card_pin',
-      'doors' => [
-        ['id' => '1', 'name' => 'Outside Door'],
-      ]
-    ]), $client->getResponse()->getContent());
-  }
+        $client->request(Request::METHOD_GET, '/api/schedules/1');
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJsonStringEqualsJsonString(json_encode([
+            'id' => '1',
+            'name' => '24/7 Exterior',
+            'mon' => true,
+            'tue' => true,
+            'wed' => true,
+            'thu' => true,
+            'fri' => true,
+            'sat' => true,
+            'sun' => true,
+            'startTime' => '00:00:00',
+            'endTime' => '23:59:59',
+            'created_at' => '2024-05-12 08:00:00',
+            'updated_at' => '2024-05-12 08:00:00',
+            'authenticationMode' => 'card_pin',
+            'doors' => [
+                ['id' => '1', 'name' => 'Outside Door'],
+            ],
+        ]), $client->getResponse()->getContent());
+    }
 
-  public function testPostSchedule(): void
-  {
-    self::loadData();
+    public function testPostSchedule(): void
+    {
+        self::loadData();
 
-    $client = self::createClient();
+        $client = self::createClient();
 
-    $client->request(Request::METHOD_GET, '/api/schedules/5');
-    self::assertEquals(404, $client->getResponse()->getStatusCode());
+        $client->request(Request::METHOD_GET, '/api/schedules/5');
+        self::assertEquals(404, $client->getResponse()->getStatusCode());
 
-    $client->request(Request::METHOD_POST, '/api/schedules', [], [], [], json_encode([
-      'name' => 'Staff Exterior',
-      'mon' => true,
-      'tue' => true,
-      'wed' => true,
-      'thu' => true,
-      'fri' => true,
-      'sat' => true,
-      'sun' => true,
-      'startTime' => '00:00:00',
-      'endTime' => '23:59:59',
-      'authenticationMode' => 'card_pin',
-      'doors' => [
-        ['id' => '1'],
-      ],
-    ]));
-    self::assertSame(201, $client->getResponse()->getStatusCode());
-    self::assertSame('/api/schedules/5', $client->getResponse()->headers->get('Location'));
+        $client->request(Request::METHOD_POST, '/api/schedules', [], [], [], json_encode([
+            'name' => 'Staff Exterior',
+            'mon' => true,
+            'tue' => true,
+            'wed' => true,
+            'thu' => true,
+            'fri' => true,
+            'sat' => true,
+            'sun' => true,
+            'startTime' => '00:00:00',
+            'endTime' => '23:59:59',
+            'authenticationMode' => 'card_pin',
+            'doors' => [
+                ['id' => '1'],
+            ],
+        ]));
+        self::assertSame(201, $client->getResponse()->getStatusCode());
+        self::assertSame('/api/schedules/5', $client->getResponse()->headers->get('Location'));
 
-    $client->request(Request::METHOD_GET, '/api/schedules/5');
-    self::assertEquals(200, $client->getResponse()->getStatusCode());
-    self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        $client->request(Request::METHOD_GET, '/api/schedules/5');
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
 
-    $scheduleResponse = json_decode($client->getResponse()->getContent(), true);
+        $scheduleResponse = json_decode($client->getResponse()->getContent(), true);
 
-    $schedule = [
-      'id' => '5',
-      'name' => 'Staff Exterior',
-      'mon' => true,
-      'tue' => true,
-      'wed' => true,
-      'thu' => true,
-      'fri' => true,
-      'sat' => true,
-      'sun' => true,
-      'startTime' => '00:00:00',
-      'endTime' => '23:59:59',
-      'created_at' => $scheduleResponse['created_at'],
-      'updated_at' => $scheduleResponse['updated_at'],
-      'authenticationMode' => 'card_pin',
-      'doors' => [
-        ['id' => '1', 'name' => 'Outside Door'],
-      ]
-    ];
+        $schedule = [
+            'id' => '5',
+            'name' => 'Staff Exterior',
+            'mon' => true,
+            'tue' => true,
+            'wed' => true,
+            'thu' => true,
+            'fri' => true,
+            'sat' => true,
+            'sun' => true,
+            'startTime' => '00:00:00',
+            'endTime' => '23:59:59',
+            'created_at' => $scheduleResponse['created_at'],
+            'updated_at' => $scheduleResponse['updated_at'],
+            'authenticationMode' => 'card_pin',
+            'doors' => [
+                ['id' => '1', 'name' => 'Outside Door'],
+            ],
+        ];
 
-    self::assertJsonStringEqualsJsonString(json_encode($schedule), $client->getResponse()->getContent());
+        self::assertJsonStringEqualsJsonString(json_encode($schedule), $client->getResponse()->getContent());
 
-    $client->request(Request::METHOD_GET, '/api/schedules');
+        $client->request(Request::METHOD_GET, '/api/schedules');
 
-    $schedule['number_of_cards'] = '0';
+        $schedule['number_of_cards'] = '0';
 
-    $schedules = self::getDefaultScheduleList();
-    $schedules['count']++;
-    $schedules['items'][] = $schedule;
+        $schedules = self::getDefaultScheduleList();
+        $schedules['count']++;
+        $schedules['items'][] = $schedule;
 
-    self::assertJsonStringEqualsJsonString(json_encode($schedules), $client->getResponse()->getContent());
-  }
+        self::assertJsonStringEqualsJsonString(json_encode($schedules), $client->getResponse()->getContent());
+    }
 
-  public function testPutScheduleInvalidSchedule(): void
-  {
-    self::loadData();
-    $client = self::createClient();
+    public function testPutScheduleInvalidSchedule(): void
+    {
+        self::loadData();
+        $client = self::createClient();
 
-    $client->request(Request::METHOD_PUT, '/api/schedules/5', [], [], [], json_encode([
-      'id' => '5',
-      'name' => 'Staff Exterior',
-      'mon' => true,
-      'tue' => true,
-      'wed' => true,
-      'thu' => true,
-      'fri' => true,
-      'sat' => true,
-      'sun' => true,
-      'startTime' => '00:00:00',
-      'endTime' => '23:59:59',
-      'authenticationMode' => 'card_pin',
-      'doors' => [],
-    ]));
-    self::assertSame(404, $client->getResponse()->getStatusCode());
-  }
+        $client->request(Request::METHOD_PUT, '/api/schedules/5', [], [], [], json_encode([
+            'id' => '5',
+            'name' => 'Staff Exterior',
+            'mon' => true,
+            'tue' => true,
+            'wed' => true,
+            'thu' => true,
+            'fri' => true,
+            'sat' => true,
+            'sun' => true,
+            'startTime' => '00:00:00',
+            'endTime' => '23:59:59',
+            'authenticationMode' => 'card_pin',
+            'doors' => [],
+        ]));
+        self::assertSame(404, $client->getResponse()->getStatusCode());
+    }
 
-  /**
-   * @dataProvider getPutScheduleCases
-   */
-  public function testPutSchedule(array $requestOverrides, array $expectedOverrides): void
-  {
-    self::loadData();
-    $client = self::createClient();
+    /**
+     * @dataProvider getPutScheduleCases
+     */
+    public function testPutSchedule(array $requestOverrides, array $expectedOverrides): void
+    {
+        self::loadData();
+        $client = self::createClient();
 
-    $client->request(Request::METHOD_PUT, '/api/schedules/3', [], [], [], json_encode(array_merge([
-      'id' => '3',
-      'name' => 'Mon-Fri 8-6 Exterior',
-      'mon' => true,
-      'tue' => true,
-      'wed' => true,
-      'thu' => true,
-      'fri' => true,
-      'sat' => true,
-      'sun' => true,
-      'startTime' => '00:00:00',
-      'endTime' => '23:59:59',
-      'authenticationMode' => 'card_pin',
-      'doors' => [
-        ['id' => '1'],
-      ],
-    ], $requestOverrides)));
-    self::assertSame(201, $client->getResponse()->getStatusCode());
-    self::assertSame('/api/schedules/3', $client->getResponse()->headers->get('Location'));
+        $client->request(Request::METHOD_PUT, '/api/schedules/3', [], [], [], json_encode(array_merge([
+            'id' => '3',
+            'name' => 'Mon-Fri 8-6 Exterior',
+            'mon' => true,
+            'tue' => true,
+            'wed' => true,
+            'thu' => true,
+            'fri' => true,
+            'sat' => true,
+            'sun' => true,
+            'startTime' => '00:00:00',
+            'endTime' => '23:59:59',
+            'authenticationMode' => 'card_pin',
+            'doors' => [
+                ['id' => '1'],
+            ],
+        ], $requestOverrides)));
+        self::assertSame(201, $client->getResponse()->getStatusCode());
+        self::assertSame('/api/schedules/3', $client->getResponse()->headers->get('Location'));
 
-    $client->request(Request::METHOD_GET, '/api/schedules/3');
-    self::assertSame(200, $client->getResponse()->getStatusCode());
-    self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        $client->request(Request::METHOD_GET, '/api/schedules/3');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
 
-    $scheduleResponse = json_decode($client->getResponse()->getContent(), true);
+        $scheduleResponse = json_decode($client->getResponse()->getContent(), true);
 
-    $schedule = array_merge([
-      'id' => '3',
-      'name' => 'Mon-Fri 8-6 Exterior',
-      'mon' => true,
-      'tue' => true,
-      'wed' => true,
-      'thu' => true,
-      'fri' => true,
-      'sat' => true,
-      'sun' => true,
-      'startTime' => '00:00:00',
-      'endTime' => '23:59:59',
-      'authenticationMode' => 'card_pin',
-      'created_at' => '2024-05-12 08:00:00',
-      'updated_at' => $scheduleResponse['updated_at'],
-      'doors' => [
-        ['id' => '1', 'name' => 'Outside Door'],
-      ],
-    ], $expectedOverrides);
+        $schedule = array_merge([
+            'id' => '3',
+            'name' => 'Mon-Fri 8-6 Exterior',
+            'mon' => true,
+            'tue' => true,
+            'wed' => true,
+            'thu' => true,
+            'fri' => true,
+            'sat' => true,
+            'sun' => true,
+            'startTime' => '00:00:00',
+            'endTime' => '23:59:59',
+            'authenticationMode' => 'card_pin',
+            'created_at' => '2024-05-12 08:00:00',
+            'updated_at' => $scheduleResponse['updated_at'],
+            'doors' => [
+                ['id' => '1', 'name' => 'Outside Door'],
+            ],
+        ], $expectedOverrides);
 
-    self::assertJsonStringEqualsJsonString(json_encode($schedule), $client->getResponse()->getContent());
-  }
+        self::assertJsonStringEqualsJsonString(json_encode($schedule), $client->getResponse()->getContent());
+    }
 
-  public static function getPutScheduleCases(): iterable
-  {
-    yield 'change name' => [
-      ['name' => 'Every Day, All Day, Exterior'],
-      ['name' => 'Every Day, All Day, Exterior'],
-    ];
-    yield 'add door' => [
-      ['doors' => [['id' => '1'], ['id' => '2']]],
-      ['doors' => [
-        ['id' => '1', 'name' => 'Outside Door'],
-        ['id' => '2', 'name' => 'Inside Door'],
-      ]],
-    ];
-    yield 'replace door' => [
-      ['doors' => [['id' => '2']]],
-      ['doors' => [
-        ['id' => '2', 'name' => 'Inside Door'],
-      ]],
-    ];
-    yield 'remove door' => [
-      ['doors' => []],
-      ['doors' => []],
-    ];
-  }
+    public static function getPutScheduleCases(): iterable
+    {
+        yield 'change name' => [
+            ['name' => 'Every Day, All Day, Exterior'],
+            ['name' => 'Every Day, All Day, Exterior'],
+        ];
+        yield 'add door' => [
+            ['doors' => [['id' => '1'], ['id' => '2']]],
+            ['doors' => [
+                ['id' => '1', 'name' => 'Outside Door'],
+                ['id' => '2', 'name' => 'Inside Door'],
+            ]],
+        ];
+        yield 'replace door' => [
+            ['doors' => [['id' => '2']]],
+            ['doors' => [
+                ['id' => '2', 'name' => 'Inside Door'],
+            ]],
+        ];
+        yield 'remove door' => [
+            ['doors' => []],
+            ['doors' => []],
+        ];
+    }
 
-  private static function getDefaultScheduleList(): array
-  {
-    return [
-      'count' => 4,
-      'items' => [
-        [
-          'id' => '1',
-          'name' => '24/7 Exterior',
-          'mon' => true,
-          'tue' => true,
-          'wed' => true,
-          'thu' => true,
-          'fri' => true,
-          'sat' => true,
-          'sun' => true,
-          'startTime' => '00:00:00',
-          'endTime' => '23:59:59',
-          'created_at' => '2024-05-12 08:00:00',
-          'updated_at' => '2024-05-12 08:00:00',
-          'authenticationMode' => 'card_pin',
-          'number_of_cards' => '0',
-          'doors' => [
-            ['id' => '1', 'name' => 'Outside Door'],
-          ],
-        ],
-        [
-          'id' => '2',
-          'name' => '24/7 Interior',
-          'mon' => true,
-          'tue' => true,
-          'wed' => true,
-          'thu' => true,
-          'fri' => true,
-          'sat' => true,
-          'sun' => true,
-          'startTime' => '00:00:00',
-          'endTime' => '23:59:59',
-          'created_at' => '2024-05-12 08:00:00',
-          'updated_at' => '2024-05-12 08:00:00',
-          'authenticationMode' => 'card',
-          'number_of_cards' => '0',
-          'doors' => [
-            ['id' => '2', 'name' => 'Inside Door'],
-          ],
-        ],
-        [
-          'id' => '3',
-          'name' => 'Mon-Fri 8-6 Exterior',
-          'mon' => true,
-          'tue' => true,
-          'wed' => true,
-          'thu' => true,
-          'fri' => true,
-          'sat' => false,
-          'sun' => false,
-          'startTime' => '08:00:00',
-          'endTime' => '18:00:00',
-          'created_at' => '2024-05-12 08:00:00',
-          'updated_at' => '2024-05-12 08:00:00',
-          'authenticationMode' => 'card_pin',
-          'number_of_cards' => '0',
-          'doors' => [
-            ['id' => '1', 'name' => 'Outside Door'],
-          ],
-        ],
-        [
-          'id' => '4',
-          'name' => 'Mon-Fri All Day Interior',
-          'mon' => true,
-          'tue' => true,
-          'wed' => true,
-          'thu' => true,
-          'fri' => true,
-          'sat' => false,
-          'sun' => false,
-          'startTime' => '00:00:00',
-          'endTime' => '23:59:59',
-          'created_at' => '2024-05-12 08:00:00',
-          'updated_at' => '2024-05-12 08:00:00',
-          'authenticationMode' => 'card',
-          'number_of_cards' => '0',
-          'doors' => [
-            ['id' => '2', 'name' => 'Inside Door'],
-          ],
-        ],
-      ],
-    ];
-  }
+    private static function getDefaultScheduleList(): array
+    {
+        return [
+            'count' => 4,
+            'items' => [
+                [
+                    'id' => '1',
+                    'name' => '24/7 Exterior',
+                    'mon' => true,
+                    'tue' => true,
+                    'wed' => true,
+                    'thu' => true,
+                    'fri' => true,
+                    'sat' => true,
+                    'sun' => true,
+                    'startTime' => '00:00:00',
+                    'endTime' => '23:59:59',
+                    'created_at' => '2024-05-12 08:00:00',
+                    'updated_at' => '2024-05-12 08:00:00',
+                    'authenticationMode' => 'card_pin',
+                    'number_of_cards' => '0',
+                    'doors' => [
+                        ['id' => '1', 'name' => 'Outside Door'],
+                    ],
+                ],
+                [
+                    'id' => '2',
+                    'name' => '24/7 Interior',
+                    'mon' => true,
+                    'tue' => true,
+                    'wed' => true,
+                    'thu' => true,
+                    'fri' => true,
+                    'sat' => true,
+                    'sun' => true,
+                    'startTime' => '00:00:00',
+                    'endTime' => '23:59:59',
+                    'created_at' => '2024-05-12 08:00:00',
+                    'updated_at' => '2024-05-12 08:00:00',
+                    'authenticationMode' => 'card',
+                    'number_of_cards' => '0',
+                    'doors' => [
+                        ['id' => '2', 'name' => 'Inside Door'],
+                    ],
+                ],
+                [
+                    'id' => '3',
+                    'name' => 'Mon-Fri 8-6 Exterior',
+                    'mon' => true,
+                    'tue' => true,
+                    'wed' => true,
+                    'thu' => true,
+                    'fri' => true,
+                    'sat' => false,
+                    'sun' => false,
+                    'startTime' => '08:00:00',
+                    'endTime' => '18:00:00',
+                    'created_at' => '2024-05-12 08:00:00',
+                    'updated_at' => '2024-05-12 08:00:00',
+                    'authenticationMode' => 'card_pin',
+                    'number_of_cards' => '0',
+                    'doors' => [
+                        ['id' => '1', 'name' => 'Outside Door'],
+                    ],
+                ],
+                [
+                    'id' => '4',
+                    'name' => 'Mon-Fri All Day Interior',
+                    'mon' => true,
+                    'tue' => true,
+                    'wed' => true,
+                    'thu' => true,
+                    'fri' => true,
+                    'sat' => false,
+                    'sun' => false,
+                    'startTime' => '00:00:00',
+                    'endTime' => '23:59:59',
+                    'created_at' => '2024-05-12 08:00:00',
+                    'updated_at' => '2024-05-12 08:00:00',
+                    'authenticationMode' => 'card',
+                    'number_of_cards' => '0',
+                    'doors' => [
+                        ['id' => '2', 'name' => 'Inside Door'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
-  private static function loadData(): void
-  {
-    self::primaryConnection()->executeStatement(<<<SQL
-INSERT INTO `doors` (id, name, identifier, created_at, updated_at) VALUES
-(null, 'Outside Door', 'out_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00'),
-(null, 'Inside Door', 'in_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00')
-;
+    private static function loadData(): void
+    {
+        self::primaryConnection()->executeStatement(
+            <<<SQL
+                INSERT INTO `doors` (id, name, identifier, created_at, updated_at) VALUES
+                (null, 'Outside Door', 'out_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00'),
+                (null, 'Inside Door', 'in_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00')
+                ;
 
-INSERT INTO `schedules` (id, name, mon, tue, wed, thu, fri, sat, sun, startTime, endTime, created_at, updated_at, authenticationMode) VALUES
-(null, '24/7 Exterior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
-(null, '24/7 Interior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card'),
-(null, 'Mon-Fri 8-6 Exterior', 1, 1, 1, 1, 1, 0, 0, '08:00:00', '18:00:00', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
-(null, 'Mon-Fri All Day Interior', 1, 1, 1, 1, 1, 0, 0, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card')
-;
+                INSERT INTO `schedules` (id, name, mon, tue, wed, thu, fri, sat, sun, startTime, endTime, created_at, updated_at, authenticationMode) VALUES
+                (null, '24/7 Exterior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
+                (null, '24/7 Interior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card'),
+                (null, 'Mon-Fri 8-6 Exterior', 1, 1, 1, 1, 1, 0, 0, '08:00:00', '18:00:00', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
+                (null, 'Mon-Fri All Day Interior', 1, 1, 1, 1, 1, 0, 0, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card')
+                ;
 
-INSERT INTO `door_schedule` (door_id, schedule_id, created_at) VALUES
-(1, 1, '2024-05-12 08:00:00'),
-(2, 2, '2024-05-12 08:00:00'),
-(1, 3, '2024-05-12 08:00:00'),
-(2, 4, '2024-05-12 08:00:00')
-;
-SQL
-    );
-  }
+                INSERT INTO `door_schedule` (door_id, schedule_id, created_at) VALUES
+                (1, 1, '2024-05-12 08:00:00'),
+                (2, 2, '2024-05-12 08:00:00'),
+                (1, 3, '2024-05-12 08:00:00'),
+                (2, 4, '2024-05-12 08:00:00')
+                ;
+                SQL
+        );
+    }
 }

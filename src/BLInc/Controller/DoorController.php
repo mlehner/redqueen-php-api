@@ -16,107 +16,107 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class DoorController
 {
-  private DoorManager $doorManager;
+    private DoorManager $doorManager;
 
-  private ValidatorInterface $validator;
+    private ValidatorInterface $validator;
 
-  private SerializerInterface $serializer;
+    private SerializerInterface $serializer;
 
-  private UrlGeneratorInterface $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
-  private Constraint $doorConstraint;
+    private Constraint $doorConstraint;
 
-  public function __construct(DoorManager $doorManager, ValidatorInterface $validator, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator)
-  {
-    $this->doorManager = $doorManager;
-    $this->validator = $validator;
-    $this->serializer = $serializer;
-    $this->urlGenerator = $urlGenerator;
-    $this->doorConstraint = new Assert\Collection([
-      'fields' => [
-        'name' => new Assert\NotBlank(),
-        'identifier' => new Assert\NotBlank(),
-      ],
-    ]);
-  }
-
-  public function getDoors(Request $request): Response
-  {
-    $doors = $this->doorManager->findAll();
-
-    return new JsonResponse(['items' => $doors, 'count' => count($doors)]);
-  }
-
-  public function postDoor(Request $request): Response
-  {
-    $content = $request->getContent();
-
-    $doorRequest = json_decode($content, true, JSON_THROW_ON_ERROR);
-
-    if (!is_array($doorRequest)) {
-      return new JsonResponse(array(array('message' => 'Request must contain a hash or properties.')), 400);
+    public function __construct(DoorManager $doorManager, ValidatorInterface $validator, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator)
+    {
+        $this->doorManager = $doorManager;
+        $this->validator = $validator;
+        $this->serializer = $serializer;
+        $this->urlGenerator = $urlGenerator;
+        $this->doorConstraint = new Assert\Collection([
+            'fields' => [
+                'name' => new Assert\NotBlank(),
+                'identifier' => new Assert\NotBlank(),
+            ],
+        ]);
     }
 
-    $violations = $this->validator->validateValue($doorRequest, $this->doorConstraint, 'new');
+    public function getDoors(Request $request): Response
+    {
+        $doors = $this->doorManager->findAll();
 
-    if (count($violations)) {
-      return new Response(
-        $this->serializer->serialize($violations, 'json'),
-        400,
-        array('Content-Type' => 'application/json')
-      );
+        return new JsonResponse(['items' => $doors, 'count' => count($doors)]);
     }
 
-    $doorId = $this->doorManager->create($doorRequest);
+    public function postDoor(Request $request): Response
+    {
+        $content = $request->getContent();
 
-    $this->doorManager->update($doorId, $doorRequest);
+        $doorRequest = json_decode($content, true, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse(null, 201, [
-      'Location' => $this->urlGenerator->generate('get_door', array('id' => $doorId)),
-    ]);
-  }
+        if (!is_array($doorRequest)) {
+            return new JsonResponse([['message' => 'Request must contain a hash or properties.']], 400);
+        }
 
-  public function getDoor(Request $request, string $id): Response
-  {
-    $door = $this->doorManager->find($id);
+        $violations = $this->validator->validateValue($doorRequest, $this->doorConstraint, 'new');
 
-    if ($door === null) {
-      return new JsonResponse([['message' => 'Door not found.']], 404);
+        if (count($violations)) {
+            return new Response(
+                $this->serializer->serialize($violations, 'json'),
+                400,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
+        $doorId = $this->doorManager->create($doorRequest);
+
+        $this->doorManager->update($doorId, $doorRequest);
+
+        return new JsonResponse(null, 201, [
+            'Location' => $this->urlGenerator->generate('get_door', ['id' => $doorId]),
+        ]);
     }
 
-    return new JsonResponse($door);
-  }
+    public function getDoor(Request $request, string $id): Response
+    {
+        $door = $this->doorManager->find($id);
 
-  public function putDoor(Request $request, string $id): Response
-  {
-    $door = $this->doorManager->find($id);
+        if ($door === null) {
+            return new JsonResponse([['message' => 'Door not found.']], 404);
+        }
 
-    if ($door === null) {
-      return new JsonResponse([['message' => 'Door not found.']], 404);
+        return new JsonResponse($door);
     }
 
-    $content = $request->getContent();
+    public function putDoor(Request $request, string $id): Response
+    {
+        $door = $this->doorManager->find($id);
 
-    $doorRequest = json_decode($content, true, JSON_THROW_ON_ERROR);
+        if ($door === null) {
+            return new JsonResponse([['message' => 'Door not found.']], 404);
+        }
 
-    if (!is_array($doorRequest)) {
-      return new JsonResponse(array(array('message' => 'Request must contain a hash or properties.')), 400);
+        $content = $request->getContent();
+
+        $doorRequest = json_decode($content, true, JSON_THROW_ON_ERROR);
+
+        if (!is_array($doorRequest)) {
+            return new JsonResponse([['message' => 'Request must contain a hash or properties.']], 400);
+        }
+
+        $violations = $this->validator->validateValue($doorRequest, $this->doorConstraint, 'edit');
+
+        if (count($violations)) {
+            return new Response(
+                $this->serializer->serialize($violations, 'json'),
+                400,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
+        $this->doorManager->update($id, $doorRequest);
+
+        return new JsonResponse(null, 201, [
+            'Location' => $this->urlGenerator->generate('get_door', ['id' => $id]),
+        ]);
     }
-
-    $violations = $this->validator->validateValue($doorRequest, $this->doorConstraint, 'edit');
-
-    if (count($violations)) {
-      return new Response(
-        $this->serializer->serialize($violations, 'json'),
-        400,
-        array('Content-Type' => 'application/json')
-      );
-    }
-
-    $this->doorManager->update($id, $doorRequest);
-
-    return new JsonResponse(null, 201, [
-      'Location' => $this->urlGenerator->generate('get_door', array('id' => $id)),
-    ]);
-  }
 }

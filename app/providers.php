@@ -22,63 +22,63 @@ use Silex\Application;
 require_once __DIR__ . '/jwt_providers.php';
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
-  'dbs.options' => [
-    'primary' => [
-      'url' => $_ENV['REDQUEEN_DB_URL'],
+    'dbs.options' => [
+        'primary' => [
+            'url' => $_ENV['REDQUEEN_DB_URL'],
+        ],
+        'log' => [
+            'url' => $_ENV['REDQUEEN_LOG_DB_URL'],
+        ],
     ],
-    'log' => [
-      'url' => $_ENV['REDQUEEN_LOG_DB_URL'],
-    ]
-  ]
 ]);
 
 $app->error(function (\Throwable $e) use ($app): void {
-  $app['logger']->error(sprintf('Exception catch: %s', $e->getMessage()), ['exception' => $e]);
+    $app['logger']->error(sprintf('Exception catch: %s', $e->getMessage()), ['exception' => $e]);
 });
 
 $app['logger'] = Pimple::share(function (Application $app): LoggerInterface {
-  return new Logger('app', [new ErrorLogHandler()]);
+    return new Logger('app', [new ErrorLogHandler()]);
 });
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
 $app['validator.validator_service_ids'] = function () {
-    return array(
+    return [
         UniqueValidator::class => 'validator.blinc_unique_validator',
-    );
+    ];
 };
 
-$app['validator.blinc_unique_validator'] = function(Silex\Application $app): UniqueValidator {
+$app['validator.blinc_unique_validator'] = function (Silex\Application $app): UniqueValidator {
     return new UniqueValidator($app['db']);
 };
 
-$app['log.manager'] = Pimple::share(function(Silex\Application $app): LogManager {
+$app['log.manager'] = Pimple::share(function (Silex\Application $app): LogManager {
     return new LogManager($app['dbs']['log']);
 });
 
-$app['card.manager'] = Pimple::share(function(Silex\Application $app): CardManager {
+$app['card.manager'] = Pimple::share(function (Silex\Application $app): CardManager {
     return new CardManager($app['db']);
 });
 
-$app['schedule.manager'] = Pimple::share(function(Silex\Application $app): ScheduleManager {
+$app['schedule.manager'] = Pimple::share(function (Silex\Application $app): ScheduleManager {
     return new ScheduleManager($app['db']);
 });
 
 $app[ScheduleController::class] = Pimple::share(function (Silex\Application $app): ScheduleController {
-  return new ScheduleController($app['schedule.manager'], $app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
+    return new ScheduleController($app['schedule.manager'], $app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
 });
 
-$app[DoorManager::class] = Pimple::share(function(Silex\Application $app): DoorManager {
-  return new DoorManager($app['db']);
+$app[DoorManager::class] = Pimple::share(function (Silex\Application $app): DoorManager {
+    return new DoorManager($app['db']);
 });
 
-$app[DoorController::class] = Pimple::share(function(Application $app): DoorController {
-  return new DoorController($app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
+$app[DoorController::class] = Pimple::share(function (Application $app): DoorController {
+    return new DoorController($app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
 });
 
-$app['serializer'] = Pimple::share(function(): SerializerInterface {
-    return JMS\Serializer\SerializerBuilder::create()->configureHandlers(function(HandlerRegistryInterface $registry) {
+$app['serializer'] = Pimple::share(function (): SerializerInterface {
+    return JMS\Serializer\SerializerBuilder::create()->configureHandlers(function (HandlerRegistryInterface $registry) {
         $registry->registerSubscribingHandler(new ConstraintViolationHandler());
         $registry->registerSubscribingHandler(new DateHandler());
         $registry->registerSubscribingHandler(new ArrayCollectionHandler());

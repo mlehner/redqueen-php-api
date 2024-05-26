@@ -80,6 +80,6 @@ $logTable->addIndex(['validPin'], 'validPin');
 $logTable->addIndex(['created_at'], 'created_at');
 
 return [
-  'primary' => $primarySchema,
-  'log' => $logSchema,
+    'primary' => $primarySchema,
+    'log' => $logSchema,
 ];

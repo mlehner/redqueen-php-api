@@ -12,26 +12,26 @@ require_once __DIR__ . '/app/bootstrap.php';
 $applyMigrations = ($argc === 2 && $argv[1] === '--force');
 
 $migrateSchema = function (Schema $schema, Connection $connection, $applyMigrations) {
-  $queries = (new SchemaTool($connection))->generateSql($schema);
+    $queries = (new SchemaTool($connection))->generateSql($schema);
 
-  $queryCount = 0;
-  echo "Queries To Run\n\n";
+    $queryCount = 0;
+    echo "Queries To Run\n\n";
 
-  foreach ($queries as $query) {
-    $queryCount++;
-    echo $query."\n";
+    foreach ($queries as $query) {
+        $queryCount++;
+        echo $query . "\n";
 
-    if ($applyMigrations) {
-      $connection->exec($query);
+        if ($applyMigrations) {
+            $connection->exec($query);
+        }
     }
-  }
 
-  if ($queryCount === 0) {
-    echo "No Migration Needed!\n";
-    return;
-  }
+    if ($queryCount === 0) {
+        echo "No Migration Needed!\n";
+        return;
+    }
 
-  echo "\n";
+    echo "\n";
 };
 
 $schemaLoader = new SchemaLoader();

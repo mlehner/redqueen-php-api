@@ -6,66 +6,76 @@ namespace BLInc\Managers;
 
 use Doctrine\DBAL\Connection;
 
-abstract class TimestampedManager implements ManagerInterface {
+abstract class TimestampedManager implements ManagerInterface
+{
     /**
      * @var Connection
      */
     protected $dbal;
 
-    public function __construct(Connection $dbal) {
+    public function __construct(Connection $dbal)
+    {
         $this->dbal = $dbal;
     }
 
     abstract public function getTable();
 
-    protected function transformRow(array $data) {
+    protected function transformRow(array $data)
+    {
         return $data;
     }
 
-    public function find($id) {
-        $data = $this->dbal->fetchAssoc($this->getFindOneQuery(), array('id' => $id));
+    public function find($id)
+    {
+        $data = $this->dbal->fetchAssoc($this->getFindOneQuery(), ['id' => $id]);
 
         return is_array($data) ? $this->transformRow($data) : null;
     }
 
-    protected function getFindOneQuery() {
+    protected function getFindOneQuery()
+    {
         return sprintf('SELECT * FROM %s WHERE id = :id', $this->getTable());
     }
 
-    public function findAll() {
+    public function findAll()
+    {
         $rows = $this->dbal->fetchAll($this->getFindAllQuery());
 
         return array_map([$this, 'transformRow'], $rows);
     }
 
-    protected function getFindAllQuery() {
+    protected function getFindAllQuery()
+    {
         return sprintf('SELECT * FROM %s', $this->getTable());
     }
 
-    public function create(array $data) {
-        $data = array_merge($data, array(
+    public function create(array $data)
+    {
+        $data = array_merge($data, [
             'created_at' => date_create()->format('Y-m-d H:i:s'),
             'updated_at' => date_create()->format('Y-m-d H:i:s'),
-        ));
+        ]);
 
         $this->dbal->insert($this->getTable(), $data);
 
         return $this->dbal->lastInsertId();
     }
 
-    public function update($id, array $data) {
-        $data = array_merge($data, array(
+    public function update($id, array $data)
+    {
+        $data = array_merge($data, [
             'updated_at' => date_create()->format('Y-m-d H:i:s'),
-        ));
+        ]);
 
-        $this->dbal->update($this->getTable(), $data, array('id' => $id));
+        $this->dbal->update($this->getTable(), $data, ['id' => $id]);
 
         // @TODO check modified rows
         return true;
     }
 
-    public function delete($id) {
-        $this->dbal->delete($this->getTable(), array('id' => $id));
+    public function delete($id)
+    {
+        $this->dbal->delete($this->getTable(), ['id' => $id]);
 
         // @TODO check modified rows
         return true;

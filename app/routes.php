@@ -14,67 +14,67 @@ use Symfony\Component\Validator\Constraints as Assert;
 use BLInc\Model\CardSerialNumber;
 
 $app['card.validation_constraints'] = function (Silex\Application $app) {
-    return new Assert\Collection(array(
-      'fields' => array(
-        'name' => new Assert\NotBlank(),
-        'facilityCode' => [
-          new Assert\NotBlank(),
-          new Assert\Type('digit'),
-          new Assert\Range(['min' => 1, 'max' => 255]),
-        ],
-        'cardNumber' => [
-          new Assert\NotBlank(),
-          new Assert\Type('digit'),
-          new Assert\Range(['min' => 1, 'max' => 65535]),
-        ],
-        'code' => array(
-          new Assert\NotBlank(),
-          new Unique(array('table' => 'cards', 'column' => 'code')),
-        ),
-        'pin' => array(
-          new Assert\Type('digit'),
-          new Assert\Length(array('min' => 3)),
-        ),
-        'isActive' => new Assert\Type(array('type' => 'boolean')),
-        'schedules' => [new Assert\Count(['min' => 1]), new Assert\All([
-          new Assert\Collection([
-            'fields' => [
-              'id' => [
+    return new Assert\Collection([
+        'fields' => [
+            'name' => new Assert\NotBlank(),
+            'facilityCode' => [
                 new Assert\NotBlank(),
-                  // Valid Schedule Id
-              ]
-            ]
-          ])
-        ])]
-      )
-    ));
+                new Assert\Type('digit'),
+                new Assert\Range(['min' => 1, 'max' => 255]),
+            ],
+            'cardNumber' => [
+                new Assert\NotBlank(),
+                new Assert\Type('digit'),
+                new Assert\Range(['min' => 1, 'max' => 65535]),
+            ],
+            'code' => [
+                new Assert\NotBlank(),
+                new Unique(['table' => 'cards', 'column' => 'code']),
+            ],
+            'pin' => [
+                new Assert\Type('digit'),
+                new Assert\Length(['min' => 3]),
+            ],
+            'isActive' => new Assert\Type(['type' => 'boolean']),
+            'schedules' => [new Assert\Count(['min' => 1]), new Assert\All([
+                new Assert\Collection([
+                    'fields' => [
+                        'id' => [
+                            new Assert\NotBlank(),
+                            // Valid Schedule Id
+                        ],
+                    ],
+                ]),
+            ])],
+        ],
+    ]);
 };
 
-$app->match('/api/cards', function() {
+$app->match('/api/cards', function () {
     $response = new JsonResponse();
     $response->headers->set('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
 
     return $response;
 })->method('OPTIONS');
 
-$app->match('/api/cards/{id}', function() {
+$app->match('/api/cards/{id}', function () {
     $response = new JsonResponse();
     $response->headers->set('Access-Control-Allow-Methods', 'PUT,GET,OPTIONS');
 
     return $response;
 })->method('OPTIONS');
 
-$app->put('/api/cards/{id}', function(Silex\Application $app, Request $request, $id) {
+$app->put('/api/cards/{id}', function (Silex\Application $app, Request $request, $id) {
     $content = $request->getContent();
 
     $card = json_decode($content, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-        return $app->json(array(array('message' => 'Failed to parse request.')), 400);
+        return $app->json([['message' => 'Failed to parse request.']], 400);
     }
 
     if (!is_array($card)) {
-        return $app->json(array(array('message' => 'Request must contain a hash or properties.')), 400);
+        return $app->json([['message' => 'Request must contain a hash or properties.']], 400);
     }
 
     $constraints = $app['card.validation_constraints'];
@@ -90,7 +90,7 @@ $app->put('/api/cards/{id}', function(Silex\Application $app, Request $request, 
         return new Response(
             $app['serializer']->serialize($violations, 'json'),
             400,
-            array('Content-Type' => 'application/json')
+            ['Content-Type' => 'application/json']
         );
     }
 
@@ -100,22 +100,22 @@ $app->put('/api/cards/{id}', function(Silex\Application $app, Request $request, 
 
     $response = new JsonResponse();
     $response->setStatusCode(201);
-    $response->headers->set('Location', $app['url_generator']->generate('get_card', array('id' => $id)));
+    $response->headers->set('Location', $app['url_generator']->generate('get_card', ['id' => $id]));
 
     return $response;
 })->bind('put_card');
 
-$app->post('/api/cards', function(Silex\Application $app, Request $request) {
+$app->post('/api/cards', function (Silex\Application $app, Request $request) {
     $content = $request->getContent();
 
     $card = json_decode($content, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-        return $app->json(array(array('message' => 'Failed to parse request.')), 400);
+        return $app->json([['message' => 'Failed to parse request.']], 400);
     }
 
     if (!is_array($card)) {
-        return $app->json(array(array('message' => 'Request must contain a hash or properties.')), 400);
+        return $app->json([['message' => 'Request must contain a hash or properties.']], 400);
     }
 
     if (isset($card['facilityCode'], $card['cardNumber'])) {
@@ -128,7 +128,7 @@ $app->post('/api/cards', function(Silex\Application $app, Request $request) {
         return new Response(
             $app['serializer']->serialize($violations, 'json'),
             400,
-            array('Content-Type' => 'application/json')
+            ['Content-Type' => 'application/json']
         );
     }
 
@@ -138,12 +138,12 @@ $app->post('/api/cards', function(Silex\Application $app, Request $request) {
 
     $response = new JsonResponse();
     $response->setStatusCode(201);
-    $response->headers->set('Location', $app['url_generator']->generate('get_card', array('id' => $card_id)));
+    $response->headers->set('Location', $app['url_generator']->generate('get_card', ['id' => $card_id]));
 
     return $response;
 })->bind('post_card');
 
-$app->get('/api/cards/{id}', function(Silex\Application $app, Request $request, $id) {
+$app->get('/api/cards/{id}', function (Silex\Application $app, Request $request, $id) {
     $card = $app['card.manager']->find($id);
 
     if (!is_array($card)) {
@@ -153,7 +153,7 @@ $app->get('/api/cards/{id}', function(Silex\Application $app, Request $request, 
     return $app->json($card);
 })->bind('get_card');
 
-$app->get('/api/cards', function(Silex\Application $app, Request $request) {
+$app->get('/api/cards', function (Silex\Application $app, Request $request) {
     $cards = $app['card.manager']->findAll();
 
     /** @var ScheduleManager $scheduleManager */
@@ -174,12 +174,12 @@ $app->get('/api/cards', function(Silex\Application $app, Request $request) {
     }
 
     $cards = array_map(function (array $card) use ($schedulesByCardId) {
-        $cardSchedules = isset($schedulesByCardId[$card['id']]) ? $schedulesByCardId[$card['id']] : [];
+        $cardSchedules = $schedulesByCardId[$card['id']] ?? [];
 
         $card['schedules'] = array_map(function (array $schedule) {
             return [
-              'id' => $schedule['id'],
-              'name' => $schedule['name'],
+                'id' => $schedule['id'],
+                'name' => $schedule['name'],
             ];
         }, $cardSchedules);
 
@@ -189,29 +189,29 @@ $app->get('/api/cards', function(Silex\Application $app, Request $request) {
     return $app->json(['items' => $cards, 'count' => count($cards)]);
 })->bind('get_cards');
 
-$app->get('/api/logs', function(Silex\Application $app, Request $request) {
-  if ($request->query->has('since')) {
-    $since = $request->query->get('since');
-    $sinceDateTime = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $since);
+$app->get('/api/logs', function (Silex\Application $app, Request $request) {
+    if ($request->query->has('since')) {
+        $since = $request->query->get('since');
+        $sinceDateTime = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $since);
 
-    if (!$sinceDateTime instanceof \DateTimeInterface) {
-      return $app->json(['message' => 'Invalid since = ' . $since], 400);
+        if (!$sinceDateTime instanceof \DateTimeInterface) {
+            return $app->json(['message' => 'Invalid since = ' . $since], 400);
+        }
     }
-  }
 
-  $logs = $app['log.manager']->findLatestSince($sinceDateTime ?? null);
+    $logs = $app['log.manager']->findLatestSince($sinceDateTime ?? null);
 
-  return $app->json(['items' => $logs, 'count' => count($logs)]);
+    return $app->json(['items' => $logs, 'count' => count($logs)]);
 })->bind('get_logs');
 
-$app->match('/api/schedules', function() {
+$app->match('/api/schedules', function () {
     $response = new JsonResponse();
     $response->headers->set('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
 
     return $response;
 })->method('OPTIONS');
 
-$app->match('/api/schedules/{id}', function() {
+$app->match('/api/schedules/{id}', function () {
     $response = new JsonResponse();
     $response->headers->set('Access-Control-Allow-Methods', 'PUT,GET,OPTIONS');
 

@@ -10,17 +10,20 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class UniqueValidator extends ConstraintValidator {
+class UniqueValidator extends ConstraintValidator
+{
     /**
      * @var Connection
      */
     protected $db;
 
-    public function __construct(Connection $db) {
+    public function __construct(Connection $db)
+    {
         $this->db = $db;
     }
 
-    public function validate($value, Constraint $constraint) {
+    public function validate($value, Constraint $constraint)
+    {
         if (!$constraint instanceof Unique) {
             throw new UnexpectedTypeException($constraint, Unique::class);
         }
@@ -36,9 +39,9 @@ class UniqueValidator extends ConstraintValidator {
             ->execute();
 
         if ($stmt->rowCount()) {
-            $this->context->addViolation($constraint->message, array(
-                '{{ value }}' => $value
-            ));
+            $this->context->addViolation($constraint->message, [
+                '{{ value }}' => $value,
+            ]);
         }
     }
 }

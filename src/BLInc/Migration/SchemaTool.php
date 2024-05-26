@@ -10,31 +10,31 @@ use Doctrine\DBAL\Schema\Schema;
 
 final class SchemaTool
 {
-  private Connection $connection;
+    private Connection $connection;
 
-  public function __construct(Connection $connection)
-  {
-    $this->connection = $connection;
-  }
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
 
-  public function recreateDatabase(): void
-  {
-    $database = $this->connection->getDatabase();
-    $this->connection->getSchemaManager()->tryMethod('dropDatabase', $database);
-    $this->connection->getSchemaManager()->createDatabase($database);
-    $this->connection->close();
-    $this->connection->connect();
-  }
+    public function recreateDatabase(): void
+    {
+        $database = $this->connection->getDatabase();
+        $this->connection->getSchemaManager()->tryMethod('dropDatabase', $database);
+        $this->connection->getSchemaManager()->createDatabase($database);
+        $this->connection->close();
+        $this->connection->connect();
+    }
 
-  public function generateSql(Schema $schema): iterable
-  {
-      $schemaManager = $this->connection->getSchemaManager();
+    public function generateSql(Schema $schema): iterable
+    {
+        $schemaManager = $this->connection->getSchemaManager();
 
-      $fromSchema = $schemaManager->createSchema();
+        $fromSchema = $schemaManager->createSchema();
 
-      $comparator = new Comparator();
-      $schemaDiff = $comparator->compare($fromSchema, $schema);
+        $comparator = new Comparator();
+        $schemaDiff = $comparator->compare($fromSchema, $schema);
 
-      return $schemaDiff->toSaveSql($this->connection->getDatabasePlatform());
-  }
+        return $schemaDiff->toSaveSql($this->connection->getDatabasePlatform());
+    }
 }

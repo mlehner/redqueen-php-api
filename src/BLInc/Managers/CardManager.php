@@ -31,40 +31,40 @@ class CardManager extends TimestampedManager
 
     public function update($id, array $data)
     {
-      $data['isActive'] = $data['isActive'] ? 1 : 0;
+        $data['isActive'] = $data['isActive'] ? 1 : 0;
 
-      return $this->dbal->transactional(function () use ($id, $data) {
-        if (isset($data['schedules'])) {
-            $schedules = $data['schedules'];
-            unset($data['schedules']);
+        return $this->dbal->transactional(function () use ($id, $data) {
+            if (isset($data['schedules'])) {
+                $schedules = $data['schedules'];
+                unset($data['schedules']);
 
-            $scheduleIds = [];
-            foreach($schedules as $schedule) {
-                $scheduleIds[] = $schedule['id'];
+                $scheduleIds = [];
+                foreach($schedules as $schedule) {
+                    $scheduleIds[] = $schedule['id'];
+                }
+
+                $currentScheduleIds = $this->getScheduleIds($id);
+
+                $schedulesToRemove = array_diff($currentScheduleIds, $scheduleIds);
+
+                foreach ($schedulesToRemove as $removeId) {
+                    $this->removeSchedule($id, $removeId);
+                }
+
+                $schedulesToAdd = array_diff($scheduleIds, $currentScheduleIds);
+
+                foreach ($schedulesToAdd as $addId) {
+                    $this->addSchedule($id, $addId);
+                }
             }
 
-            $currentScheduleIds = $this->getScheduleIds($id);
-
-            $schedulesToRemove = array_diff($currentScheduleIds, $scheduleIds);
-
-            foreach ($schedulesToRemove as $removeId) {
-                $this->removeSchedule($id, $removeId);
-            }
-
-            $schedulesToAdd = array_diff($scheduleIds, $currentScheduleIds);
-
-            foreach ($schedulesToAdd as $addId) {
-                $this->addSchedule($id, $addId);
-            }
-        }
-
-        parent::update($id, $data);
-      });
+            parent::update($id, $data);
+        });
     }
 
     public function create(array $data)
     {
-      $schedules = [];
+        $schedules = [];
         if (isset($data['schedules'])) {
             $schedules = $data['schedules'];
             unset($data['schedules']);
@@ -73,24 +73,24 @@ class CardManager extends TimestampedManager
         $data['isActive'] = $data['isActive'] ? 1 : 0;
 
         $this->dbal->transactional(function () use ($data, $schedules) {
-          $id = parent::create($data);
+            $id = parent::create($data);
 
-          if (count($schedules) > 0) {
-              foreach ($schedules as $schedule) {
-                  $this->addSchedule($id, $schedule['id']);
-              }
-          }
+            if (count($schedules) > 0) {
+                foreach ($schedules as $schedule) {
+                    $this->addSchedule($id, $schedule['id']);
+                }
+            }
 
-          return $id;
+            return $id;
         });
     }
 
     public function delete($id)
     {
-      return $this->dbal->transactional(function() use ($id) {
-        $this->dbal->delete('card_schedule', ['card_id' => $id]);
-        parent::delete($id);
-      });
+        return $this->dbal->transactional(function () use ($id) {
+            $this->dbal->delete('card_schedule', ['card_id' => $id]);
+            parent::delete($id);
+        });
     }
 
     public function find($id)
@@ -108,7 +108,7 @@ class CardManager extends TimestampedManager
     {
         $results = parent::findAll();
 
-        return array_map(function($card) {
+        return array_map(function ($card) {
             unset($card['pin']);
 
             return $card;
@@ -119,9 +119,9 @@ class CardManager extends TimestampedManager
     {
         $query = 'SELECT schedule_id FROM card_schedule WHERE card_id = :cardId';
 
-        $rows = $this->dbal->fetchAll($query, array('cardId' => $id));
+        $rows = $this->dbal->fetchAll($query, ['cardId' => $id]);
 
-        $ids = array();
+        $ids = [];
         foreach($rows as $row) {
             $ids[] = $row['schedule_id'];
         }
@@ -134,10 +134,10 @@ class CardManager extends TimestampedManager
         $scheduleIds = $this->getScheduleIds($id);
 
         if (false === in_array($scheduleId, $scheduleIds)) {
-            $this->dbal->insert('card_schedule', array(
+            $this->dbal->insert('card_schedule', [
                 'card_id' => $id,
                 'schedule_id' => $scheduleId,
-            ));
+            ]);
         }
     }
 
@@ -146,10 +146,10 @@ class CardManager extends TimestampedManager
         $scheduleIds = $this->getScheduleIds($id);
 
         if (in_array($scheduleId, $scheduleIds)) {
-            $this->dbal->delete('card_schedule', array(
+            $this->dbal->delete('card_schedule', [
                 'card_id' => $id,
                 'schedule_id' => $scheduleId,
-            ));
+            ]);
         }
     }
 }

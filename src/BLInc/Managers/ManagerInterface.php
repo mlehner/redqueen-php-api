@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace BLInc\Managers;
 
-interface ManagerInterface {
+interface ManagerInterface
+{
     public function find($id);
     public function findAll();
 

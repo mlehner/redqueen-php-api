@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = new Dotenv();
-$dotenv->bootEnv(__DIR__.'/../.env');
+$dotenv->bootEnv(__DIR__ . '/../.env');
 
 $app = new Silex\Application();
 $app['debug'] = $_ENV['APP_DEBUG'];
