@@ -45,10 +45,13 @@ class LogManager extends TimestampedManager
 
     protected function transformRow(array $data)
     {
-        $csn = CardSerialNumber::createFromHex($data['code']);
+        try {
+          $csn = CardSerialNumber::createFromHex($data['code']);
 
-        $data['facilityCode'] = $csn->getFacilityCode();
-        $data['cardNumber'] = $csn->getCardNumber();
+          $data['facilityCode'] = $csn->getFacilityCode();
+          $data['cardNumber'] = $csn->getCardNumber();
+        } catch (\Throwable $e) {
+        }
 
         $data['createdAt'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
         unset($data['created_at']);
