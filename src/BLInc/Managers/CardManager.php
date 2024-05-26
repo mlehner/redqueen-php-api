@@ -31,6 +31,9 @@ class CardManager extends TimestampedManager
 
     public function update($id, array $data)
     {
+      $data['isActive'] = $data['isActive'] ? 1 : 0;
+
+      return $this->dbal->transactional(function () use ($id, $data) {
         if (isset($data['schedules'])) {
             $schedules = $data['schedules'];
             unset($data['schedules']);
@@ -55,33 +58,39 @@ class CardManager extends TimestampedManager
             }
         }
 
-        $data['isActive'] = $data['isActive'] ? 1 : 0;
-
         parent::update($id, $data);
+      });
     }
 
     public function create(array $data)
     {
+      $schedules = [];
         if (isset($data['schedules'])) {
             $schedules = $data['schedules'];
             unset($data['schedules']);
         }
 
-        $id = parent::create($data);
+        $data['isActive'] = $data['isActive'] ? 1 : 0;
 
-        if (isset($schedules)) {
-            foreach ($schedules as $schedule) {
-                $this->addSchedule($id, $schedule['id']);
-            }
-        }
+        $this->dbal->transactional(function () use ($data, $schedules) {
+          $id = parent::create($data);
 
-        return $id;
+          if (count($schedules) > 0) {
+              foreach ($schedules as $schedule) {
+                  $this->addSchedule($id, $schedule['id']);
+              }
+          }
+
+          return $id;
+        });
     }
 
     public function delete($id)
     {
-        $this->dbal->delete('card_schedules', ['card_id' => $id]);
+      return $this->dbal->transactional(function() use ($id) {
+        $this->dbal->delete('card_schedule', ['card_id' => $id]);
         parent::delete($id);
+      });
     }
 
     public function find($id)
