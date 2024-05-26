@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Symfony\Component\Dotenv\Dotenv;
 
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = new Dotenv();
