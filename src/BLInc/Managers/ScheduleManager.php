@@ -136,6 +136,7 @@ class ScheduleManager extends TimestampedManager
                 $this->dbal->insert('door_schedule', [
                     'schedule_id' => $id,
                     'door_id' => $doorId,
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
             }
         });
