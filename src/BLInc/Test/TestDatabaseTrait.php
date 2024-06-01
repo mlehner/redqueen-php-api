@@ -32,7 +32,7 @@ trait TestDatabaseTrait
         $schemaTool->recreateDatabase();
 
         foreach ($schemaTool->generateSql($schemaLoader->getPrimarySchema()) as $query) {
-            $primaryConnection->exec($query);
+            $primaryConnection->executeStatement($query);
         }
     }
 
@@ -41,7 +41,7 @@ trait TestDatabaseTrait
         $primaryConnection = self::primaryConnection();
 
         foreach ($primaryConnection->getSchemaManager()->listTables() as $table) {
-            $primaryConnection->executeUpdate('ALTER TABLE `' . $table->getName() . '` AUTO_INCREMENT=1');
+            $primaryConnection->executeStatement('ALTER TABLE `' . $table->getName() . '` AUTO_INCREMENT=1');
         }
 
         $primaryConnection->beginTransaction();
