@@ -114,8 +114,6 @@ class ScheduleManager extends TimestampedManager
     {
         $result = parent::find($id);
 
-        unset($result['pin']);
-
         $result['doors'] = array_map(fn ($id) => ['id' => $id], $this->getDoorIds($id));
 
         return $result;
