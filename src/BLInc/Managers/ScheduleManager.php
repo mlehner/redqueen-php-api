@@ -92,7 +92,9 @@ class ScheduleManager extends TimestampedManager
 
             if (count($doors) > 0) {
                 foreach ($doors as $door) {
-                    $this->addDoor($id, $door['id']);
+                    if (isset($door['id'])) {
+                        $this->addDoor($id, $door['id']);
+                    }
                 }
             }
 

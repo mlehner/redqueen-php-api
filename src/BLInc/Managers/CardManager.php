@@ -77,7 +77,9 @@ class CardManager extends TimestampedManager
 
             if (count($schedules) > 0) {
                 foreach ($schedules as $schedule) {
-                    $this->addSchedule($id, $schedule['id']);
+                    if (isset($schedule['id'])) {
+                        $this->addSchedule($id, $schedule['id']);
+                    }
                 }
             }
 
