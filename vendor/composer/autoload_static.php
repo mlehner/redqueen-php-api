@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit03d2328850a24520ba161b5b08aa83b7
+class ComposerStaticInitce9c265fa8ee6cc629775ba1332154ec
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -147,8 +147,8 @@ class ComposerStaticInit03d2328850a24520ba161b5b08aa83b7
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -667,6 +667,8 @@ class ComposerStaticInit03d2328850a24520ba161b5b08aa83b7
         'Doctrine\\DBAL\\Types\\VarDateTimeType' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Types/VarDateTimeType.php',
         'Doctrine\\DBAL\\Version' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Version.php',
         'Doctrine\\DBAL\\VersionAwarePlatformDriver' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/VersionAwarePlatformDriver.php',
+        'Doctrine\\Deprecations\\Deprecation' => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations/Deprecation.php',
+        'Doctrine\\Deprecations\\PHPUnit\\VerifyDeprecations' => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations/PHPUnit/VerifyDeprecations.php',
         'Doctrine\\Instantiator\\Exception\\ExceptionInterface' => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator/Exception/ExceptionInterface.php',
         'Doctrine\\Instantiator\\Exception\\InvalidArgumentException' => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator/Exception/InvalidArgumentException.php',
         'Doctrine\\Instantiator\\Exception\\UnexpectedValueException' => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator/Exception/UnexpectedValueException.php',
@@ -1845,10 +1847,10 @@ class ComposerStaticInit03d2328850a24520ba161b5b08aa83b7
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit03d2328850a24520ba161b5b08aa83b7::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitce9c265fa8ee6cc629775ba1332154ec::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitce9c265fa8ee6cc629775ba1332154ec::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitce9c265fa8ee6cc629775ba1332154ec::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitce9c265fa8ee6cc629775ba1332154ec::$classMap;
 
         }, null, ClassLoader::class);
     }
