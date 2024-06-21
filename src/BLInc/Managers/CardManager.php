@@ -99,7 +99,7 @@ class CardManager extends TimestampedManager
 
         unset($result['pin']);
 
-        $result['schedules'] = $this->getScheduleIds($id);
+        $result['schedules'] = array_map(fn ($id) => ['id' => $id], $this->getScheduleIds($id));
 
         return $result;
     }
