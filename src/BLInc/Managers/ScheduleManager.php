@@ -108,6 +108,17 @@ class ScheduleManager extends TimestampedManager
         });
     }
 
+    public function find($id)
+    {
+        $result = parent::find($id);
+
+        unset($result['pin']);
+
+        $result['doors'] = array_map(fn ($id) => ['id' => $id], $this->getDoorIds($id));
+
+        return $result;
+    }
+
     public function getTable()
     {
         return 'schedules';

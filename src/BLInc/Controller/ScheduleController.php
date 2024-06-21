@@ -109,16 +109,6 @@ final class ScheduleController
             throw new NotFoundHttpException();
         }
 
-        $doors = $this->doorManager->findBySchedules([$id]);
-
-        $schedule['doors'] = [];
-        foreach ($doors as $door) {
-            $schedule['doors'][] = [
-                'id' => $door['id'],
-                'name' => $door['name'],
-            ];
-        }
-
         return new JSONResponse($schedule);
     }
 
