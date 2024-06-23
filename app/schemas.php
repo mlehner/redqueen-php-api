@@ -14,8 +14,8 @@ $cardTable->addColumn('name', 'string', ['length' => 255, 'notnull' => true]);
 $cardTable->addColumn('code', 'string', ['length' => 6, 'notnull' => true]);
 $cardTable->addColumn('pin', 'string', ['length' => 32, 'notnull' => true]);
 $cardTable->addColumn('isActive', 'boolean', ['default' => true, 'notnull' => true]);
-$cardTable->addColumn('created_at', 'datetime', ['notnull' => true]);
-$cardTable->addColumn('updated_at', 'datetime', ['notnull' => true]);
+$cardTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
+$cardTable->addColumn('updated_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
 
 $cardTable->setPrimaryKey(['id']);
 $cardTable->addIndex(['code'], 'code');
@@ -35,15 +35,15 @@ $scheduleTable->addColumn('sun', 'boolean', ['unsigned' => true, 'notnull' => tr
 $scheduleTable->addColumn('startTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('endTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('authenticationMode', 'string', ['length' => 10, 'default' => 'card_pin', 'notnull' => true]);
-$scheduleTable->addColumn('created_at', 'datetime', ['notnull' => true]);
-$scheduleTable->addColumn('updated_at', 'datetime', ['notnull' => true]);
+$scheduleTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
+$scheduleTable->addColumn('updated_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
 
 $scheduleTable->setPrimaryKey(['id']);
 
 $cardScheduleTable = $primarySchema->createTable('card_schedule');
 $cardScheduleTable->addColumn('card_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
 $cardScheduleTable->addColumn('schedule_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
-$cardScheduleTable->addColumn('created_at', 'datetime' /* @TODO add notnull */);
+$cardScheduleTable->addColumn('created_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
 
 $cardScheduleTable->setPrimaryKey(['card_id', 'schedule_id']);
 
@@ -52,8 +52,8 @@ $doorTable = $primarySchema->createTable('doors');
 $doorTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
 $doorTable->addColumn('name', 'string', ['length' => 255, 'notnull' => true]);
 $doorTable->addColumn('identifier', 'string', ['length' => 255, 'notnull' => true]);
-$doorTable->addColumn('created_at', 'datetime', ['notnull' => true]);
-$doorTable->addColumn('updated_at', 'datetime', ['notnull' => true]);
+$doorTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
+$doorTable->addColumn('updated_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
 
 $doorTable->setPrimaryKey(['id']);
 $doorTable->addUniqueIndex(['identifier']);
@@ -61,7 +61,7 @@ $doorTable->addUniqueIndex(['identifier']);
 $doorScheduleTable = $primarySchema->createTable('door_schedule');
 $doorScheduleTable->addColumn('door_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
 $doorScheduleTable->addColumn('schedule_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
-$doorScheduleTable->addColumn('created_at', 'datetime', ['notnull' => true]);
+$doorScheduleTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 
 $doorScheduleTable->setPrimaryKey(['door_id', 'schedule_id']);
 
@@ -72,7 +72,7 @@ $logTable = $logSchema->createTable('logs');
 $logTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
 $logTable->addColumn('code', 'string', ['length' => 6, 'notnull' => true]);
 $logTable->addColumn('validPin', 'boolean', ['notnull' => true, 'default' => false]);
-$logTable->addColumn('created_at', 'datetime', ['notnull' => true]);
+$logTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 $logTable->addColumn('door_identifier', 'string', ['length' => 255]);
 
 $logTable->setPrimaryKey(['id']);
