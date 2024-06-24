@@ -73,7 +73,7 @@ $logTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'au
 $logTable->addColumn('code', 'string', ['length' => 6, 'notnull' => true]);
 $logTable->addColumn('validPin', 'boolean', ['notnull' => true, 'default' => false]);
 $logTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
-$logTable->addColumn('door_identifier', 'string', ['length' => 255]);
+$logTable->addColumn('door_identifier', 'string', ['length' => 255, 'notnull' => false]);
 
 $logTable->setPrimaryKey(['id']);
 $logTable->addIndex(['code'], 'code');
