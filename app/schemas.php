@@ -43,7 +43,7 @@ $scheduleTable->setPrimaryKey(['id']);
 $cardScheduleTable = $primarySchema->createTable('card_schedule');
 $cardScheduleTable->addColumn('card_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
 $cardScheduleTable->addColumn('schedule_id', 'bigint', ['length' => 20, 'unsigned' => true, 'notnull' => true]);
-$cardScheduleTable->addColumn('created_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
+$cardScheduleTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 
 $cardScheduleTable->setPrimaryKey(['card_id', 'schedule_id']);
 
