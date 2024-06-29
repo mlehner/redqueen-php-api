@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace BLInc\Managers;
 
 use BLInc\Model\CardSerialNumber;
+use Doctrine\DBAL\Query\QueryBuilder;
 
-class LogManager extends TimestampedManager
+final class LogManager extends TimestampedManager
 {
-    public function getTable()
+    public function getTable(): string
     {
         return 'logs';
     }
@@ -19,31 +20,45 @@ class LogManager extends TimestampedManager
             $sinceDateTime = new \DateTimeImmutable();
         }
 
-        $rows = $this->dbal->fetchAll(
-            <<<SQL
-                        SELECT
-                            l.id, l.code, l.validPin, l.created_at, MAX(c.name) AS name
-                        FROM `logs` AS l
-                            LEFT JOIN `cards` AS c ON (l.code = c.code)
-                        WHERE l.created_at < :sinceDateTime
-                        GROUP BY l.id
-                        ORDER BY l.created_at
-                        DESC LIMIT 100
-                SQL,
-            [
-                'sinceDateTime' => $sinceDateTime->format('Y-m-d H:i:s'),
-            ]
-        );
+        $rows = $this
+            ->getFindAllQueryBuilder()
+            ->andWhere('l.created_at < :sinceDateTime')
+            ->setParameter('sinceDateTime', $sinceDateTime->format('Y-m-d H:i:s'))
+            ->execute()
+            ->fetchAllAssociative()
+        ;
 
         return array_map([$this, 'transformRow'], $rows);
     }
 
     protected function getFindAllQuery(): string
     {
-        return 'SELECT l.id, l.code, l.validPin, l.created_at, MAX(c.name) AS name FROM `logs` AS l LEFT JOIN `cards` AS c ON (l.code = c.code) GROUP BY l.id ORDER BY l.created_at DESC LIMIT 100';
+        return $this->getFindAllQueryBuilder()->getSQL();
     }
 
-    protected function transformRow(array $data)
+    protected function getFindAllQueryBuilder(): QueryBuilder
+    {
+        return $this->dbal->createQueryBuilder()
+            ->select(
+                'l.id',
+                'l.code',
+                'l.validPin',
+                'l.created_at',
+                'MAX(c.name) AS card__name',
+                'l.door_identifier AS door__identifier',
+                'd.id AS door__id',
+                'd.name AS door__name',
+            )
+            ->from('logs', 'l')
+            ->leftJoin('l', 'cards', 'c', 'l.code = c.code')
+            ->leftJoin('l', 'doors', 'd', 'l.door_identifier = d.identifier')
+            ->groupBy('l.id, l.created_at')
+            ->orderBy('l.created_at', 'DESC')
+            ->setMaxResults(100)
+        ;
+    }
+
+    protected function transformRow(array $data): array
     {
         try {
           $csn = CardSerialNumber::createFromHex($data['code']);
@@ -55,6 +70,21 @@ class LogManager extends TimestampedManager
 
         $data['createdAt'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
         unset($data['created_at']);
+
+        foreach ($data as $key => $value) {
+            if (!strpos($key, '__')) {
+                continue;
+            }
+
+            list($relation, $property) = explode('__', $key, 2);
+
+            if (!isset($data[$relation])) {
+                $data[$relation] = [];
+            }
+
+            $data[$relation][$property] = $value;
+            unset($data[$key]);
+        }
 
         return $data;
     }
