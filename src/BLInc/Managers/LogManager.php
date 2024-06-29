@@ -44,7 +44,7 @@ final class LogManager extends TimestampedManager
                 'l.code',
                 'l.validPin',
                 'l.created_at',
-                'MAX(c.name) AS card__name',
+                'MAX(c.name) AS name',
                 'l.door_identifier AS door__identifier',
                 'd.id AS door__id',
                 'd.name AS door__name',
