@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 use Doctrine\DBAL\Schema\Schema;
 
+$booleanColumnOptions = fn (bool $default = false) => [
+    'default' => ($default ? 1 : 0),
+    'unsigned' => true,
+    'columnDefinition' => 'TINYINT UNSIGNED NOT NULL DEFAULT ' . ($default ? "'1'" : "'0'")
+];
+
+
 $primarySchema = new Schema();
 
 $cardTable = $primarySchema->createTable('cards');
@@ -13,7 +20,7 @@ $cardTable->addColumn('name', 'string', ['length' => 255, 'notnull' => true]);
 // @TODO this should be unique
 $cardTable->addColumn('code', 'string', ['length' => 6, 'notnull' => true]);
 $cardTable->addColumn('pin', 'string', ['length' => 32, 'notnull' => true]);
-$cardTable->addColumn('isActive', 'boolean', ['default' => true, 'notnull' => true]);
+$cardTable->addColumn('isActive', 'boolean', $booleanColumnOptions(true));
 $cardTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 $cardTable->addColumn('updated_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
 
@@ -25,13 +32,13 @@ $scheduleTable = $primarySchema->createTable('schedules');
 
 $scheduleTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
 $scheduleTable->addColumn('name', 'string', ['length' => 255, 'notnull' => true]);
-$scheduleTable->addColumn('mon', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('tue', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('wed', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('thu', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('fri', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('sat', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
-$scheduleTable->addColumn('sun', 'boolean', ['unsigned' => true, 'notnull' => true, 'default' => false]);
+$scheduleTable->addColumn('mon', 'boolean', $booleanColumnOptions(false));
+$scheduleTable->addColumn('tue', 'boolean', $booleanColumnOptions(false));
+$scheduleTable->addColumn('wed', 'boolean', $booleanColumnOptions(false));
+$scheduleTable->addColumn('thu', 'boolean', $booleanColumnOptions(false));
+$scheduleTable->addColumn('fri', 'boolean', $booleanColumnOptions(false));
+$scheduleTable->addColumn('sat', 'boolean', $booleanColumnOptions(false));
+$scheduleTable->addColumn('sun', 'boolean', $booleanColumnOptions(false));
 $scheduleTable->addColumn('startTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('endTime', 'time', ['notnull' => true]);
 $scheduleTable->addColumn('authenticationMode', 'string', ['length' => 10, 'default' => 'card_pin', 'notnull' => true]);
@@ -75,7 +82,7 @@ $logTable = $logSchema->createTable('logs');
 
 $logTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
 $logTable->addColumn('code', 'string', ['length' => 6, 'notnull' => true]);
-$logTable->addColumn('validPin', 'boolean', ['notnull' => true, 'default' => false]);
+$logTable->addColumn('validPin', 'boolean', $booleanColumnOptions(false));
 $logTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 $logTable->addColumn('door_identifier', 'string', ['length' => 255, 'notnull' => false]);
 
