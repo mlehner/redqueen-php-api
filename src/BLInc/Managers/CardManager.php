@@ -72,7 +72,7 @@ class CardManager extends TimestampedManager
 
         $data['isActive'] = $data['isActive'] ? 1 : 0;
 
-        $this->dbal->transactional(function () use ($data, $schedules) {
+        return $this->dbal->transactional(function () use ($data, $schedules) {
             $id = parent::create($data);
 
             if (count($schedules) > 0) {
