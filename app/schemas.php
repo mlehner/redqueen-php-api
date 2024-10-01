@@ -73,8 +73,8 @@ $doorScheduleTable->addColumn('schedule_id', 'bigint', ['length' => 20, 'unsigne
 $doorScheduleTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 
 $doorScheduleTable->setPrimaryKey(['door_id', 'schedule_id']);
-$doorScheduleTable->addForeignKeyConstraint('doors', ['door_id'], ['id'], ['onDelete' => 'CASCADE']);
-$doorScheduleTable->addForeignKeyConstraint('schedules', ['schedule_id'], ['id'], ['onDelete' => 'RESTRICT']);
+$doorScheduleTable->addForeignKeyConstraint('schedules', ['schedule_id'], ['id'], ['onDelete' => 'CASCADE']);
+$doorScheduleTable->addForeignKeyConstraint('doors', ['door_id'], ['id'], ['onDelete' => 'RESTRICT']);
 
 $logSchema = new Schema();
 
