@@ -58,16 +58,16 @@ $app['log.manager'] = Pimple::share(function (Silex\Application $app): LogManage
     return new LogManager($app['dbs']['log']);
 });
 
-$app['card.manager'] = Pimple::share(function (Silex\Application $app): CardManager {
+$app[CardManager::class] = Pimple::share(function (Silex\Application $app): CardManager {
     return new CardManager($app['db']);
 });
 
-$app['schedule.manager'] = Pimple::share(function (Silex\Application $app): ScheduleManager {
+$app[ScheduleManager::class] = Pimple::share(function (Silex\Application $app): ScheduleManager {
     return new ScheduleManager($app['db']);
 });
 
 $app[ScheduleController::class] = Pimple::share(function (Silex\Application $app): ScheduleController {
-    return new ScheduleController($app['schedule.manager'], $app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
+    return new ScheduleController($app[ScheduleManager::class], $app[DoorManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
 });
 
 $app[DoorManager::class] = Pimple::share(function (Silex\Application $app): DoorManager {
@@ -79,7 +79,7 @@ $app[DoorController::class] = Pimple::share(function (Application $app): DoorCon
 });
 
 $app[CardController::class] = Pimple::share(function (Silex\Application $app): CardController {
-    return new CardController($app['card.manager'], $app['schedule.manager'], $app['validator'], $app['serializer'], $app['url_generator']);
+    return new CardController($app[CardManager::class], $app[ScheduleManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
 });
 
 $app['serializer'] = Pimple::share(function (): SerializerInterface {
