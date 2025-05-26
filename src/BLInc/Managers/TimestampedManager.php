@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BLInc\Managers;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 abstract class TimestampedManager implements ManagerInterface
 {
@@ -29,26 +30,48 @@ abstract class TimestampedManager implements ManagerInterface
 
     public function find($id)
     {
-        $data = $this->dbal->fetchAssoc($this->getFindOneQuery(), ['id' => $id]);
+        $data = $this->dbal->fetchAssociative($this->getFindOneQuery(), ['id' => $id]);
 
         return is_array($data) ? $this->transformRow($data) : null;
     }
 
     protected function getFindOneQuery()
     {
-        return sprintf('SELECT * FROM %s WHERE id = :id', $this->getTable());
+        return $this->getFindOneQueryBuilder()->getSQL();
+    }
+
+    protected function getFindOneQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder()
+            ->where('id = :id')
+            ;
+    }
+
+    protected function createQueryBuilder(): QueryBuilder
+    {
+        $tableName = $this->getTable();
+
+        return $this->dbal->createQueryBuilder()
+            ->select($this->dbal->quoteIdentifier($tableName) . '.*')
+            ->from($tableName)
+            ;
     }
 
     public function findAll()
     {
-        $rows = $this->dbal->fetchAll($this->getFindAllQuery());
+        $rows = $this->dbal->fetchAllAssociative($this->getFindAllQuery());
 
         return array_map([$this, 'transformRow'], $rows);
     }
 
     protected function getFindAllQuery()
     {
-        return sprintf('SELECT * FROM %s', $this->getTable());
+        return $this->getFindAllQueryBuilder()->getSQL();
+    }
+
+    protected function getFindAllQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder();
     }
 
     public function create(array $data)

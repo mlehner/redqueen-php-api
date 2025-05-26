@@ -31,11 +31,6 @@ final class LogManager extends TimestampedManager
         return array_map([$this, 'transformRow'], $rows);
     }
 
-    protected function getFindAllQuery(): string
-    {
-        return $this->getFindAllQueryBuilder()->getSQL();
-    }
-
     protected function getFindAllQueryBuilder(): QueryBuilder
     {
         return $this->dbal->createQueryBuilder()
