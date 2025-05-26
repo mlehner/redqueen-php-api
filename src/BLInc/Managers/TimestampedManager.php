@@ -77,9 +77,8 @@ abstract class TimestampedManager implements ManagerInterface
 
     public function delete($id)
     {
-        $this->dbal->delete($this->getTable(), ['id' => $id]);
-
-        // @TODO check modified rows
-        return true;
+        return $this->update($id, [
+            'deleted_at' => date_create()->format(self::DATETIME_FORMAT)
+        ]);
     }
 }

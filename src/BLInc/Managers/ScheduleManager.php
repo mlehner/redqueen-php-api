@@ -102,14 +102,6 @@ class ScheduleManager extends TimestampedManager
         });
     }
 
-    public function delete($id)
-    {
-        return $this->dbal->transactional(function () use ($id) {
-            $this->dbal->delete('door_schedule', ['schedule_id' => $id]);
-            parent::delete($id);
-        });
-    }
-
     public function find($id): ?array
     {
         $result = parent::find($id);

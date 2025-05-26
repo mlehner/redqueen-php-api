@@ -87,14 +87,6 @@ class CardManager extends TimestampedManager
         });
     }
 
-    public function delete($id)
-    {
-        return $this->dbal->transactional(function () use ($id) {
-            $this->dbal->delete('card_schedule', ['card_id' => $id]);
-            parent::delete($id);
-        });
-    }
-
     public function find($id)
     {
         $result = parent::find($id);
