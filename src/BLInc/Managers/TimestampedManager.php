@@ -8,6 +8,8 @@ use Doctrine\DBAL\Connection;
 
 abstract class TimestampedManager implements ManagerInterface
 {
+    protected const DATETIME_FORMAT = 'Y-m-d H:i:s';
+
     /**
      * @var Connection
      */
@@ -52,8 +54,8 @@ abstract class TimestampedManager implements ManagerInterface
     public function create(array $data)
     {
         $data = array_merge($data, [
-            'created_at' => date_create()->format('Y-m-d H:i:s'),
-            'updated_at' => date_create()->format('Y-m-d H:i:s'),
+            'created_at' => date_create()->format(self::DATETIME_FORMAT),
+            'updated_at' => date_create()->format(self::DATETIME_FORMAT),
         ]);
 
         $this->dbal->insert($this->getTable(), $data);
@@ -64,7 +66,7 @@ abstract class TimestampedManager implements ManagerInterface
     public function update($id, array $data)
     {
         $data = array_merge($data, [
-            'updated_at' => date_create()->format('Y-m-d H:i:s'),
+            'updated_at' => date_create()->format(self::DATETIME_FORMAT),
         ]);
 
         $this->dbal->update($this->getTable(), $data, ['id' => $id]);
