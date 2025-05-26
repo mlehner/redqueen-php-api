@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace BLInc\Test;
+
+trait TestFixtureTrait
+{
+    use TestDatabaseTrait;
+
+    public static function loadData(): void
+    {
+        self::primaryConnection()->executeStatement(<<<'SQL'
+            INSERT INTO `doors` (id, name, identifier, created_at, updated_at) VALUES
+            (null, 'Outside Door', 'out_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00'),
+            (null, 'Inside Door', 'in_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00')
+            ;
+
+            INSERT INTO `schedules` (id, name, mon, tue, wed, thu, fri, sat, sun, startTime, endTime, created_at, updated_at, authenticationMode) VALUES
+            (null, '24/7 Exterior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
+            (null, '24/7 Interior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card'),
+            (null, 'Mon-Fri 8-6 Exterior', 1, 1, 1, 1, 1, 0, 0, '08:00:00', '18:00:00', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
+            (null, 'Mon-Fri All Day Interior', 1, 1, 1, 1, 1, 0, 0, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card')
+            ;
+
+            INSERT INTO `door_schedule` (door_id, schedule_id, created_at) VALUES
+            (1, 1, '2024-05-12 08:00:00'),
+            (2, 2, '2024-05-12 08:00:00'),
+            (1, 3, '2024-05-12 08:00:00'),
+            (2, 4, '2024-05-12 08:00:00')
+            ;
+
+            INSERT INTO `cards` VALUES
+            (null, 'Person One', 'F0A000', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00'),
+            (null, 'Person Two', 'F0A001', '0000', 0, '2022-08-20 10:00:00', '2022-08-20 10:00:00')
+            ;
+
+            INSERT INTO `card_schedule` VALUES
+            (1, 1, '2022-08-20 10:00:00'),
+            (1, 2, '2022-08-20 10:00:00'),
+            (2, 1, '2022-08-20 10:00:00'),
+            (2, 4, '2022-08-20 10:00:00')
+            ;
+            SQL);
+    }
+}
