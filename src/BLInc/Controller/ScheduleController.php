@@ -70,33 +70,7 @@ final class ScheduleController
     public function getSchedules(): Response
     {
         $schedules = $this->scheduleManager->findAll();
-
-        $doors = $this->doorManager->findBySchedules(array_map(function (array $schedule) {
-            return $schedule['id'];
-        }, $schedules));
-
-        $doorsByScheduleId = [];
-
-        foreach ($doors as $door) {
-            if (isset($doorsByScheduleId[$door['schedule_id']])) {
-                $doorsByScheduleId[$door['schedule_id']] = [];
-            }
-
-            $doorsByScheduleId[$door['schedule_id']][] = $door;
-        }
-
-        $schedules = array_map(function (array $schedule) use ($doorsByScheduleId) {
-            $scheduleDoors = $doorsByScheduleId[$schedule['id']] ?? [];
-
-            $schedule['doors'] = array_map(function (array $door) {
-                return [
-                    'id' => $door['id'],
-                    'name' => $door['name'],
-                ];
-            }, $scheduleDoors);
-
-            return $schedule;
-        }, $schedules);
+        $schedules = $this->injectDoors($schedules);
 
         return new JsonResponse(['items' => $schedules, 'count' => count($schedules)]);
     }
@@ -109,7 +83,9 @@ final class ScheduleController
             throw new NotFoundHttpException();
         }
 
-        return new JSONResponse($schedule);
+        $schedules = $this->injectDoors([$schedule]);
+
+        return new JSONResponse($schedules[0]);
     }
 
     public function postSchedule(Request $request): Response
@@ -185,5 +161,40 @@ final class ScheduleController
         $response->headers->set('Location', $this->urlGenerator->generate('get_schedule', ['id' => $id]));
 
         return $response;
+    }
+
+    private function injectDoors(array $schedules): array
+    {
+        $doors = $this->doorManager->findBySchedules(array_map(function (array $schedule) {
+            return $schedule['id'];
+        }, $schedules));
+
+        $doorsByScheduleId = [];
+
+        foreach ($doors as $door) {
+            if (!isset($doorsByScheduleId[$door['schedule_id']])) {
+                $doorsByScheduleId[$door['schedule_id']] = [];
+            }
+
+            $doorsByScheduleId[$door['schedule_id']][] = $door;
+        }
+
+        return array_map(function (array $schedule) use ($doorsByScheduleId) {
+            $scheduleDoors = $doorsByScheduleId[$schedule['id']] ?? [];
+
+            $schedule['doors'] = array_map(function (array $door) {
+                return $this->normalizeDoor($door);
+            }, $scheduleDoors);
+
+            return $schedule;
+        }, $schedules);
+    }
+
+    private function normalizeDoor(array $door): array
+    {
+        return [
+            'id' => $door['id'],
+            'name' => $door['name'],
+        ];
     }
 }
