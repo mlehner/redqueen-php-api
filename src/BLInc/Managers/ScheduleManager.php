@@ -110,9 +110,13 @@ class ScheduleManager extends TimestampedManager
         });
     }
 
-    public function find($id)
+    public function find($id): ?array
     {
         $result = parent::find($id);
+
+        if (!is_array($result)) {
+            return null;
+        }
 
         $result['doors'] = array_map(fn ($id) => ['id' => $id], $this->getDoorIds($id));
 
