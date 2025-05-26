@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use BLInc\Test\TestClientTrait;
 use BLInc\Test\TestDatabaseTrait;
+use BLInc\Test\TestFixtureTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 final class ScheduleApiTest extends TestCase
 {
     use TestDatabaseTrait;
+    use TestFixtureTrait;
     use TestClientTrait;
 
     public function testGetSchedules(): void
@@ -248,7 +250,7 @@ final class ScheduleApiTest extends TestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card_pin',
-                    'number_of_cards' => '0',
+                    'number_of_cards' => '2',
                     'doors' => [
                         ['id' => '1', 'name' => 'Outside Door'],
                     ],
@@ -268,7 +270,7 @@ final class ScheduleApiTest extends TestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card',
-                    'number_of_cards' => '0',
+                    'number_of_cards' => '1',
                     'doors' => [
                         ['id' => '2', 'name' => 'Inside Door'],
                     ],
@@ -308,38 +310,12 @@ final class ScheduleApiTest extends TestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card',
-                    'number_of_cards' => '0',
+                    'number_of_cards' => '1',
                     'doors' => [
                         ['id' => '2', 'name' => 'Inside Door'],
                     ],
                 ],
             ],
         ];
-    }
-
-    private static function loadData(): void
-    {
-        self::primaryConnection()->executeStatement(
-            <<<SQL
-                INSERT INTO `doors` (id, name, identifier, created_at, updated_at) VALUES
-                (null, 'Outside Door', 'out_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00'),
-                (null, 'Inside Door', 'in_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00')
-                ;
-
-                INSERT INTO `schedules` (id, name, mon, tue, wed, thu, fri, sat, sun, startTime, endTime, created_at, updated_at, authenticationMode) VALUES
-                (null, '24/7 Exterior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
-                (null, '24/7 Interior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card'),
-                (null, 'Mon-Fri 8-6 Exterior', 1, 1, 1, 1, 1, 0, 0, '08:00:00', '18:00:00', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
-                (null, 'Mon-Fri All Day Interior', 1, 1, 1, 1, 1, 0, 0, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card')
-                ;
-
-                INSERT INTO `door_schedule` (door_id, schedule_id, created_at) VALUES
-                (1, 1, '2024-05-12 08:00:00'),
-                (2, 2, '2024-05-12 08:00:00'),
-                (1, 3, '2024-05-12 08:00:00'),
-                (2, 4, '2024-05-12 08:00:00')
-                ;
-                SQL
-        );
     }
 }
