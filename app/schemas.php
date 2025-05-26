@@ -10,7 +10,6 @@ $booleanColumnOptions = fn (bool $default = false) => [
     'columnDefinition' => 'TINYINT UNSIGNED NOT NULL DEFAULT ' . ($default ? "'1'" : "'0'")
 ];
 
-
 $primarySchema = new Schema();
 
 $cardTable = $primarySchema->createTable('cards');
@@ -23,10 +22,12 @@ $cardTable->addColumn('pin', 'string', ['length' => 32, 'notnull' => true]);
 $cardTable->addColumn('isActive', 'boolean', $booleanColumnOptions(true));
 $cardTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
 $cardTable->addColumn('updated_at', 'datetime', ['columnDefinition' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP']);
+$cardTable->addColumn('deleted_at', 'datetime', ['notnull' => false]);
 
 $cardTable->setPrimaryKey(['id']);
 $cardTable->addIndex(['code'], 'code');
 $cardTable->addIndex(['isActive'], 'isActive');
+$cardTable->addIndex(['deleted_at'], 'deleted_at');
 
 $scheduleTable = $primarySchema->createTable('schedules');
 

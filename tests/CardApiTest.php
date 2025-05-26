@@ -32,6 +32,7 @@ final class CardApiTest extends TestCase
 
        $expectedResponse = self::getDefaultCardList()['items'][0];
        unset($expectedResponse['schedules'][0]['name'], $expectedResponse['schedules'][1]['name']);
+       $expectedResponse['deleted_at'] = null;
 
        $client->request(Request::METHOD_GET, '/api/cards/1');
        self::assertSame(200, $client->getResponse()->getStatusCode());
@@ -55,20 +56,21 @@ final class CardApiTest extends TestCase
         ], JSON_THROW_ON_ERROR));
         self::assertSame(201, $client->getResponse()->getStatusCode());
         self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
-        self::assertSame('/api/cards/3', $client->getResponse()->headers->get('Location'));
+        self::assertSame('/api/cards/5', $client->getResponse()->headers->get('Location'));
         self::assertSame('{}', $client->getResponse()->getContent());
 
         $expectedResponse = [
-            'id' => '3',
+            'id' => '5',
             'name' => 'Person Three',
             'facilityCode' => 240,
             'cardNumber' => 40962,
             'code' => 'F0A002',
             'isActive' => true,
             'schedules' => [],
+            'deleted_at' => null,
         ];
 
-        $client->request(Request::METHOD_GET, '/api/cards/3');
+        $client->request(Request::METHOD_GET, '/api/cards/5');
         self::assertSame(200, $client->getResponse()->getStatusCode());
         self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
         self::assertJson($client->getResponse()->getContent());
@@ -81,6 +83,7 @@ final class CardApiTest extends TestCase
 
         $cards = self::getDefaultCardList();
         $cards['count']++;
+        unset($expectedResponse['deleted_at']);
         $cards['items'][] = $expectedResponse;
 
         $client->request(Request::METHOD_GET, '/api/cards');
@@ -116,6 +119,7 @@ final class CardApiTest extends TestCase
             'code' => 'F0A000',
             'isActive' => true,
             'schedules' => [],
+            'deleted_at' => null,
         ], $expectedOverrides);
 
         $client->request(Request::METHOD_GET, '/api/cards/1');
@@ -211,8 +215,28 @@ final class CardApiTest extends TestCase
                         ],
                     ],
                 ],
+                [
+                    'id' => '4',
+                    'name' => 'Person Three',
+                    'facilityCode' => 240,
+                    'cardNumber' => 40964,
+                    'code' => 'F0A004',
+                    'isActive' => true,
+                    'created_at' => '2022-08-20 10:00:00',
+                    'updated_at' => '2022-08-20 10:00:00',
+                    'schedules' => [
+                        [
+                            'id' => '1',
+                            'name' => '24/7 Exterior',
+                        ],
+                        [
+                            'id' => '2',
+                            'name' => '24/7 Interior',
+                        ],
+                    ],
+                ],
             ],
-            'count' => 2,
+            'count' => 3,
         ];
     }
 }

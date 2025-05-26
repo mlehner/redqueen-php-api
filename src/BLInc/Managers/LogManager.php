@@ -45,7 +45,7 @@ final class LogManager extends TimestampedManager
                 'd.name AS door__name',
             )
             ->from('logs', 'l')
-            ->leftJoin('l', 'cards', 'c', 'l.code = c.code')
+            ->leftJoin('l', 'cards', 'c', 'l.code = c.code AND l.created_at >= c.created_at')
             ->leftJoin('l', 'doors', 'd', 'l.door_identifier = d.identifier')
             ->groupBy('l.id, l.created_at')
             ->orderBy('l.created_at', 'DESC')

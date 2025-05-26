@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BLInc\Managers;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 class ScheduleManager extends TimestampedManager
 {
@@ -14,9 +15,15 @@ class ScheduleManager extends TimestampedManager
         return array_map([$this, 'transformRow'], $this->dbal->fetchAll($query, ['cardIds' => $cardIds], ['cardIds' => Connection::PARAM_INT_ARRAY]));
     }
 
-    protected function getFindAllQuery(): string
+    protected function getFindAllQueryBuilder(): QueryBuilder
     {
-        return 'SELECT s.*, COUNT(cs.card_id) AS number_of_cards FROM schedules s LEFT JOIN card_schedule cs on s.id = cs.schedule_id GROUP BY s.id';
+        return $this->createQueryBuilder()
+            ->addSelect('COUNT(c.id) AS number_of_cards')
+            ->leftJoin('schedules', 'card_schedule', 'cs', 'schedules.id = cs.schedule_id')
+            ->leftJoin('cs', 'cards', 'c', 'cs.card_id = c.id')
+            ->andWhere('c.deleted_at IS NULL')
+            ->groupBy('schedules.id')
+            ;
     }
 
     protected function transformRow(array $data)

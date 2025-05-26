@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace BLInc\Managers;
 
 use BLInc\Model\CardSerialNumber;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 class CardManager extends TimestampedManager
 {
-    public function getTable()
+    private const TABLE_NAME = 'cards';
+
+    public function getTable(): string
     {
-        return 'cards';
+        return self::TABLE_NAME;
     }
 
-    public function transformRow(array $data)
+    protected function transformRow(array $data)
     {
         $data['isActive'] = (bool) $data['isActive'];
 
@@ -145,5 +148,35 @@ class CardManager extends TimestampedManager
                 'schedule_id' => $scheduleId,
             ]);
         }
+    }
+
+    protected function getFindOneQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder()
+            ->andWhere('id = :id')
+            ->addSelect('c.deleted_at')
+            ;
+    }
+
+    protected function getFindAllQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder()
+            ->where('deleted_at IS NULL')
+            ;
+    }
+
+    protected function createQueryBuilder(): QueryBuilder
+    {
+        return $this->dbal->createQueryBuilder()
+            ->select(
+                'c.id',
+                'c.name',
+                'c.code',
+                'c.isActive',
+                'c.created_at',
+                'c.updated_at',
+            )
+            ->from(self::TABLE_NAME, 'c')
+            ;
     }
 }
