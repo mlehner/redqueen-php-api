@@ -11,6 +11,7 @@ $app->put('/api/cards/{id}', [$app[CardController::class], 'putCard'])->bind('pu
 $app->post('/api/cards', [$app[CardController::class], 'postCard'])->bind('post_card');
 $app->get('/api/cards/{id}', [$app[CardController::class], 'getCard'])->bind('get_card');
 $app->get('/api/cards', [$app[CardController::class], 'getCards'])->bind('get_cards');
+$app->delete('/api/cards/{id}', [$app[CardController::class], 'deleteCard'])->bind('delete_card');
 
 $app->get('/api/logs', [$app[LogController::class], 'getLogs'])->bind('get_logs');
 

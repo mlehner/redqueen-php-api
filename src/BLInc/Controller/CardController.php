@@ -180,6 +180,13 @@ final class CardController
         return $response;
     }
 
+    public function deleteCard(string $id): Response
+    {
+        $this->cardManager->delete($id);
+
+        return new JsonResponse(null, 200);
+    }
+
     private function injectSchedules(array $cards): array
     {
         $schedules = $this->scheduleManager->findByCards(array_map(function (array $card) {
