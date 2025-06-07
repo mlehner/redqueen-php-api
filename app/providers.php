@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use BLInc\Controller\CardController;
 use BLInc\Controller\DoorController;
+use BLInc\Controller\LogController;
 use BLInc\Controller\ScheduleController;
 use BLInc\Managers\CardManager;
 use BLInc\Managers\DoorManager;
@@ -80,6 +81,10 @@ $app[DoorController::class] = Pimple::share(function (Application $app): DoorCon
 
 $app[CardController::class] = Pimple::share(function (Silex\Application $app): CardController {
     return new CardController($app[CardManager::class], $app[ScheduleManager::class], $app['validator'], $app['serializer'], $app['url_generator']);
+});
+
+$app[LogController::class] = Pimple::share(function (Silex\Application $app): LogController {
+    return new LogController($app[LogManager::class]);
 });
 
 $app['serializer'] = Pimple::share(function (): SerializerInterface {
