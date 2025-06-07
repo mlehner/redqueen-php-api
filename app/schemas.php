@@ -82,6 +82,7 @@ $logSchema = new Schema();
 $logTable = $logSchema->createTable('logs');
 
 $logTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
+$logTable->addColumn('card_id', 'bigint', ['unsigned' => true, 'notnull' => false]);
 $logTable->addColumn('code', 'string', ['length' => 6, 'notnull' => true]);
 $logTable->addColumn('validPin', 'boolean', $booleanColumnOptions(false));
 $logTable->addColumn('created_at', 'datetime', ['notnull' => true, 'default' => 'CURRENT_TIMESTAMP']);
