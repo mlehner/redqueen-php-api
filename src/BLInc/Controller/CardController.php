@@ -171,11 +171,11 @@ final class CardController
 
         unset($card['facilityCode'], $card['cardNumber']);
 
-        $this->cardManager->update($id, $card);
+        $newId = $this->cardManager->update($id, $card);
 
         $response = new JsonResponse();
         $response->setStatusCode(201);
-        $response->headers->set('Location', $this->urlGenerator->generate('get_card', ['id' => $id]));
+        $response->headers->set('Location', $this->urlGenerator->generate('get_card', ['id' => $newId]));
 
         return $response;
     }
