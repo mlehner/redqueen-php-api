@@ -50,6 +50,7 @@ class CardManager extends TimestampedManager
         }
 
         $data['isActive'] = $data['isActive'] ? 1 : 0;
+        $data['deleted_at'] = null;
 
         return $this->dbal->transactional(function () use ($data, $schedules): string {
             $id = parent::create($data);
