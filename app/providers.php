@@ -55,7 +55,7 @@ $app['validator.blinc_unique_validator'] = function (Silex\Application $app): Un
     return new UniqueValidator($app['db']);
 };
 
-$app['log.manager'] = Pimple::share(function (Silex\Application $app): LogManager {
+$app[LogManager::class] = Pimple::share(function (Silex\Application $app): LogManager {
     return new LogManager($app['dbs']['log']);
 });
 
