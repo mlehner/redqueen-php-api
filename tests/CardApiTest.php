@@ -108,11 +108,11 @@ final class CardApiTest extends TestCase
         ], $requestOverrides), JSON_THROW_ON_ERROR));
         self::assertSame(201, $client->getResponse()->getStatusCode());
         self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
-        self::assertSame('/api/cards/1', $client->getResponse()->headers->get('Location'));
+        self::assertSame('/api/cards/5', $client->getResponse()->headers->get('Location'));
         self::assertSame('{}', $client->getResponse()->getContent());
 
         $expectedResponse = array_merge([
-            'id' => '1',
+            'id' => '5',
             'name' => 'Person One',
             'facilityCode' => 240,
             'cardNumber' => 40960,
@@ -122,7 +122,7 @@ final class CardApiTest extends TestCase
             'deleted_at' => null,
         ], $expectedOverrides);
 
-        $client->request(Request::METHOD_GET, '/api/cards/1');
+        $client->request(Request::METHOD_GET, '/api/cards/5');
         self::assertSame(200, $client->getResponse()->getStatusCode());
         self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
         self::assertJson($client->getResponse()->getContent());
