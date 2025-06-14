@@ -35,10 +35,10 @@ class CardManager extends TimestampedManager
     public function update($id, array $data): string
     {
         return $this->dbal->transactional(function () use ($id, $data): string {
-            $id = $this->create($data);
+            $card = parent::find($id);
+            $data['pin'] = $card['pin'];
             $this->delete($id);
-
-            return $id;
+            return $this->create($data);
         });
     }
 
@@ -130,6 +130,7 @@ class CardManager extends TimestampedManager
     protected function getFindOneQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder()
+            ->addSelect('c.pin')
             ->andWhere('id = :id')
             ->addSelect('c.deleted_at')
             ;
