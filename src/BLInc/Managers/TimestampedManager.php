@@ -81,6 +81,8 @@ abstract class TimestampedManager implements ManagerInterface
             'updated_at' => date_create()->format(self::DATETIME_FORMAT),
         ]);
 
+        unset($data['id']);
+
         $this->dbal->insert($this->getTable(), $data);
 
         return $this->dbal->lastInsertId();
