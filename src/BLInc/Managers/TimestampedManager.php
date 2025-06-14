@@ -30,7 +30,7 @@ abstract class TimestampedManager implements ManagerInterface
 
     public function find($id)
     {
-        $data = $this->dbal->fetchAssociative($this->getFindOneQuery(), ['id' => $id]);
+        $data = $this->findInternal($id);
 
         return is_array($data) ? $this->transformRow($data) : null;
     }
@@ -106,5 +106,12 @@ abstract class TimestampedManager implements ManagerInterface
 
         // @TODO check modified rows
         return true;
+    }
+
+    protected function findInternal(string $id): ?array
+    {
+        $data = $this->dbal->fetchAssociative($this->getFindOneQuery(), ['id' => $id]);
+
+        return is_array($data) ? $data : null;
     }
 }

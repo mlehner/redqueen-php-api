@@ -35,10 +35,9 @@ class CardManager extends TimestampedManager
     public function update($id, array $data): string
     {
         return $this->dbal->transactional(function () use ($id, $data): string {
-            $card = parent::find($id);
-            $data['pin'] = $card['pin'];
+            $originalCard = $this->findInternal($id);
             $this->delete($id);
-            return $this->create($data);
+            return $this->create(array_merge($originalCard, $data));
         });
     }
 
