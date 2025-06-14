@@ -75,7 +75,7 @@ final class ScheduleController
         return new JsonResponse(['items' => $schedules, 'count' => count($schedules)]);
     }
 
-    public function getSchedule(int $id): Response
+    public function getSchedule(string $id): Response
     {
         $schedule = $this->scheduleManager->find($id);
 
@@ -121,7 +121,7 @@ final class ScheduleController
         return $response;
     }
 
-    public function putSchedule(Request $request, int $id): Response
+    public function putSchedule(Request $request, string $id): Response
     {
         $schedule = $this->scheduleManager->find($id);
 
