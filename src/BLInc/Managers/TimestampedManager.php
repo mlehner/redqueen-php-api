@@ -88,20 +88,23 @@ abstract class TimestampedManager implements ManagerInterface
 
     public function update($id, array $data)
     {
-        $data = array_merge($data, [
+        return $this->updateInternal($id, array_merge($data, [
             'updated_at' => date_create()->format(self::DATETIME_FORMAT),
-        ]);
+        ]));
+    }
 
+    public function delete($id): bool
+    {
+        return $this->updateInternal($id, [
+            'deleted_at' => date_create()->format(self::DATETIME_FORMAT)
+        ]);
+    }
+
+    protected function updateInternal($id, array $data): bool
+    {
         $this->dbal->update($this->getTable(), $data, ['id' => $id]);
 
         // @TODO check modified rows
         return true;
-    }
-
-    public function delete($id)
-    {
-        return $this->update($id, [
-            'deleted_at' => date_create()->format(self::DATETIME_FORMAT)
-        ]);
     }
 }
