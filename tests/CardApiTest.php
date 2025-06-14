@@ -84,7 +84,7 @@ final class CardApiTest extends TestCase
         $cards = self::getDefaultCardList();
         $cards['count']++;
         unset($expectedResponse['deleted_at']);
-        $cards['items'][] = $expectedResponse;
+        array_unshift($cards['items'], $expectedResponse);
 
         $client->request(Request::METHOD_GET, '/api/cards');
         self::assertJsonStringEqualsJsonString(json_encode($cards, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());

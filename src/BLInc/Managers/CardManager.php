@@ -155,6 +155,8 @@ class CardManager extends TimestampedManager
                 'c.updated_at',
             )
             ->from(self::TABLE_NAME, 'c')
+            ->orderBy('c.created_at', 'DESC')
+            ->addOrderBy('c.id', 'ASC')
             ;
     }
 }
