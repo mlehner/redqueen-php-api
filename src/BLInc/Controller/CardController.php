@@ -62,6 +62,7 @@ final class CardController
                     new Unique(['table' => 'cards', 'column' => 'code']),
                 ],
                 'pin' => [
+                    new Assert\NotBlank(['groups' => 'new']),
                     new Assert\Type('digit'),
                     new Assert\Length(['min' => 3]),
                 ],
