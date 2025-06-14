@@ -98,14 +98,7 @@ final class CardApiTest extends TestCase
         self::loadData();
         $client = self::createClient();
 
-        $client->request(Request::METHOD_PUT, '/api/cards/1', [], [], [], json_encode(array_merge([
-            'name' => 'Person One',
-            'facilityCode' => '240',
-            'cardNumber' => '40960',
-            'code' => 'F0A000',
-            'isActive' => true,
-            'schedules' => [],
-        ], $requestOverrides), JSON_THROW_ON_ERROR));
+        $client->request(Request::METHOD_PUT, '/api/cards/1', [], [], [], json_encode($requestOverrides), JSON_THROW_ON_ERROR);
         self::assertSame(201, $client->getResponse()->getStatusCode());
         self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
         self::assertSame('/api/cards/5', $client->getResponse()->headers->get('Location'));
