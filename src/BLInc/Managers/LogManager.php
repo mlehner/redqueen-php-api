@@ -66,6 +66,8 @@ final class LogManager extends TimestampedManager
         } catch (\Throwable $e) {
         }
 
+        $data['validPin'] = (bool) $data['validPin'];
+
         $data['createdAt'] = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $data['created_at'])->format(\DateTime::ATOM);
         unset($data['created_at']);
 
