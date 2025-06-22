@@ -104,15 +104,36 @@ final class CardApiTest extends TestCase
         self::assertSame('/api/cards/5', $client->getResponse()->headers->get('Location'));
         self::assertSame('{}', $client->getResponse()->getContent());
 
-        $expectedResponse = array_merge([
-            'id' => '5',
+        $originalCardResponse = [
+            'id' => '1',
             'name' => 'Person One',
             'facilityCode' => 240,
             'cardNumber' => 40960,
             'code' => 'F0A000',
             'isActive' => true,
-            'schedules' => [],
+            'schedules' => [
+                ['id' => '1'],
+                ['id' => '2'],
+            ],
             'deleted_at' => null,
+        ];
+
+        $client->request(Request::METHOD_GET, '/api/cards/1');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJson($client->getResponse()->getContent());
+
+        $expectedResponse = $originalCardResponse;
+        $cardResponse = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $expectedResponse['created_at'] = $cardResponse['created_at'];
+        $expectedResponse['updated_at'] = $cardResponse['updated_at'];
+        $expectedResponse['deleted_at'] = $cardResponse['deleted_at'];
+
+        self::assertNotNull($cardResponse['deleted_at']);
+        self::assertJsonStringEqualsJsonString(json_encode($expectedResponse, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
+
+        $expectedResponse = array_merge($originalCardResponse, [
+            'id' => '5',
         ], $expectedOverrides);
 
         $client->request(Request::METHOD_GET, '/api/cards/5');
