@@ -14,6 +14,7 @@ trait TestDatabaseTrait
     {
         self::rebuildDatabase();
     }
+
     public function setUp(): void
     {
         self::beforeTest();
@@ -26,35 +27,66 @@ trait TestDatabaseTrait
 
     private static function rebuildDatabase(): void
     {
-        $primaryConnection = self::primaryConnection();
-        $schemaTool = new SchemaTool($primaryConnection);
-        $schemaLoader = new SchemaLoader();
-        $schemaTool->recreateDatabase();
+        $primarySchemaTool = self::rebuildPrimaryDatabase();
+        $logSchemaTool = self::rebuildLogDatabase();
 
-        foreach ($schemaTool->generateSql($schemaLoader->getPrimarySchema()) as $query) {
-            $primaryConnection->executeStatement($query);
-        }
+        self::rebuildPrimarySchema($primarySchemaTool);
+        self::rebuildLogSchema($logSchemaTool);
     }
 
-    private static function beforeTest(): Connection
+    private static function rebuildPrimaryDatabase(): SchemaTool
     {
         $primaryConnection = self::primaryConnection();
+        $schemaTool = new SchemaTool($primaryConnection);
+        $schemaTool->recreateDatabase();
+
+        return $schemaTool;
+    }
+    private static function rebuildPrimarySchema(SchemaTool $schemaTool): void
+    {
+        $schemaLoader = new SchemaLoader();
+        $schemaTool->executeSchemaSql($schemaLoader->getPrimarySchema());
+    }
+
+    private static function rebuildLogDatabase(): SchemaTool
+    {
+        $logConnection = self::logConnection();
+        $schemaTool = new SchemaTool($logConnection);
+        $schemaTool->recreateDatabase();
+
+        return $schemaTool;
+    }
+
+    private static function rebuildLogSchema(SchemaTool $schemaTool): void
+    {
+        $schemaLoader = new SchemaLoader();
+        $schemaTool->executeSchemaSql($schemaLoader->getLogSchema());
+    }
+
+    private static function beforeTest(): void
+    {
+        $primaryConnection = self::primaryConnection();
+        $logConnection = self::logConnection();
 
         foreach ($primaryConnection->getSchemaManager()->listTables() as $table) {
             $primaryConnection->executeStatement('ALTER TABLE `' . $table->getName() . '` AUTO_INCREMENT=1');
         }
 
-        $primaryConnection->beginTransaction();
+        foreach ($logConnection->getSchemaManager()->listTables() as $table) {
+            $logConnection->executeStatement('ALTER TABLE `' . $table->getName() . '` AUTO_INCREMENT=1');
+        }
 
-        return $primaryConnection;
+        $primaryConnection->beginTransaction();
+        $logConnection->beginTransaction();
     }
 
-    private static function afterTest(): Connection
+    private static function afterTest(): void
     {
         $primaryConnection = self::primaryConnection();
         $primaryConnection->rollBack();
 
-        return $primaryConnection;
+        $logConnection = self::logConnection();
+        $logConnection->rollBack();
     }
 
     private static function primaryConnection(): Connection
@@ -62,5 +94,12 @@ trait TestDatabaseTrait
         global $app;
         assert($app['db'] instanceof Connection);
         return $app['db'];
+    }
+
+    private static function logConnection(): Connection
+    {
+        global $app;
+        assert($app['dbs']['log'] instanceof Connection);
+        return $app['dbs']['log'];
     }
 }

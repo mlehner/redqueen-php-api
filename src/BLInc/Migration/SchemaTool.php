@@ -37,4 +37,11 @@ final class SchemaTool
 
         return $schemaDiff->toSaveSql($this->connection->getDatabasePlatform());
     }
+
+    public function executeSchemaSql(Schema $schema): void
+    {
+        foreach ($this->generateSql($schema) as $query) {
+            $this->connection->executeStatement($query);
+        }
+    }
 }
