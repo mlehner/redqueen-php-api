@@ -127,6 +127,50 @@ final class CardApiTest extends TestCase
         self::assertJsonStringEqualsJsonString(json_encode($expectedResponse, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
     }
 
+    public function testDeleteCard(): void
+    {
+        self::loadData();
+        $client = self::createClient();
+
+        $defaultCardList = self::getDefaultCardList();
+        $client->request(Request::METHOD_GET, '/api/cards');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJsonStringEqualsJsonString(json_encode($defaultCardList, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
+
+        $firstCard = $defaultCardList['items'][0];
+        $firstCard['deleted_at'] = null;
+        unset($firstCard['schedules'][0]['name'], $firstCard['schedules'][1]['name']);
+        $client->request(Request::METHOD_GET, '/api/cards/1');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJsonStringEqualsJsonString(json_encode($firstCard, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
+
+        $client->request(Request::METHOD_DELETE, '/api/cards/1');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+
+        $client->request(Request::METHOD_GET, '/api/cards/1');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+
+        $jsonResponse = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($jsonResponse);
+        self::assertNotNull($jsonResponse['deleted_at']);
+        self::assertNotNull($jsonResponse['updated_at']);
+
+        $firstCard['deleted_at'] = $jsonResponse['deleted_at'];
+        $firstCard['updated_at'] = $jsonResponse['updated_at'];
+        self::assertJsonStringEqualsJsonString(json_encode($firstCard, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
+
+        array_shift($defaultCardList['items']);
+        $defaultCardList['count'] = 2;
+        $client->request(Request::METHOD_GET, '/api/cards');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJsonStringEqualsJsonString(json_encode($defaultCardList, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
+    }
+
     public static function getPutCardCases(): iterable
     {
         yield 'change name' => [
