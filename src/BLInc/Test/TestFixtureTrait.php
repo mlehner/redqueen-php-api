@@ -12,15 +12,15 @@ trait TestFixtureTrait
     {
         self::primaryConnection()->executeStatement(<<<'SQL'
             INSERT INTO `doors` (id, name, identifier, created_at, updated_at) VALUES
-            (null, 'Outside Door', 'out_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00'),
-            (null, 'Inside Door', 'in_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00')
+            (1, 'Outside Door', 'out_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00'),
+            (2, 'Inside Door', 'in_door', '2024-05-12 08:00:00', '2024-05-12 08:00:00')
             ;
 
             INSERT INTO `schedules` (id, name, mon, tue, wed, thu, fri, sat, sun, startTime, endTime, created_at, updated_at, authenticationMode) VALUES
-            (null, '24/7 Exterior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
-            (null, '24/7 Interior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card'),
-            (null, 'Mon-Fri 8-6 Exterior', 1, 1, 1, 1, 1, 0, 0, '08:00:00', '18:00:00', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
-            (null, 'Mon-Fri All Day Interior', 1, 1, 1, 1, 1, 0, 0, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card')
+            (1, '24/7 Exterior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
+            (2, '24/7 Interior', 1, 1, 1, 1, 1, 1, 1, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card'),
+            (3, 'Mon-Fri 8-6 Exterior', 1, 1, 1, 1, 1, 0, 0, '08:00:00', '18:00:00', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card_pin'),
+            (4, 'Mon-Fri All Day Interior', 1, 1, 1, 1, 1, 0, 0, '00:00:00', '23:59:59', '2024-05-12 08:00:00', '2024-05-12 08:00:00', 'card')
             ;
 
             INSERT INTO `door_schedule` (door_id, schedule_id, created_at) VALUES
@@ -31,13 +31,13 @@ trait TestFixtureTrait
             ;
 
             INSERT INTO `cards` (id, name, code, pin, isActive, created_at, updated_at, deleted_at) VALUES
-            (null, 'Person One', 'F0A000', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00', NULL),
-            (null, 'Person Two', 'F0A001', '0000', 0, '2022-08-20 10:00:00', '2022-08-20 10:00:00', NULL),
-            (null, 'Person Three', 'F0A000', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00', '2022-08-20 10:00:00'),
-            (null, 'Person Three', 'F0A004', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00', NULL)
+            (1, 'Person One', 'F0A000', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00', NULL),
+            (2, 'Person Two', 'F0A001', '0000', 0, '2022-08-20 10:00:00', '2022-08-20 10:00:00', NULL),
+            (3, 'Person Three', 'F0A000', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00', '2022-08-20 10:00:00'),
+            (4, 'Person Three', 'F0A004', '0000', 1, '2022-08-20 10:00:00', '2022-08-20 10:00:00', NULL)
             ;
 
-            INSERT INTO `card_schedule` VALUES
+            INSERT INTO `card_schedule` (card_id, schedule_id, created_at) VALUES
             (1, 1, '2022-08-20 10:00:00'),
             (1, 2, '2022-08-20 10:00:00'),
             (2, 1, '2022-08-20 10:00:00'),
