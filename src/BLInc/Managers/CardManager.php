@@ -36,6 +36,7 @@ class CardManager extends TimestampedManager
     {
         return $this->dbal->transactional(function () use ($id, $data): string {
             $originalCard = $this->findInternal($id);
+            $originalCard['schedules'] = array_map(fn ($id) => ['id' => $id], $this->getScheduleIds($id));
             $this->delete($id);
             return $this->create(array_merge($originalCard, $data));
         });
