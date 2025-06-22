@@ -39,15 +39,18 @@ final class LogManager extends TimestampedManager
                 'l.code',
                 'l.validPin',
                 'l.created_at',
-                'MAX(c.name) AS name',
+                'MAX(cf.name) AS name',
+                'c.id AS card__id',
+                'c.name AS card__name',
                 'l.door_identifier AS door__identifier',
                 'd.id AS door__id',
                 'd.name AS door__name',
             )
             ->from('logs', 'l')
-            ->leftJoin('l', 'cards', 'c', 'l.code = c.code AND l.created_at >= c.created_at')
+            ->leftJoin('l', 'cards', 'c', 'l.card_id = c.id')
+            ->leftJoin('l', 'cards', 'cf', 'l.code = cf.code AND l.created_at >= cf.created_at')
             ->leftJoin('l', 'doors', 'd', 'l.door_identifier = d.identifier')
-            ->groupBy('l.id, l.created_at')
+            ->groupBy('l.id')
             ->orderBy('l.created_at', 'DESC')
             ->setMaxResults(100)
         ;
