@@ -224,7 +224,7 @@ final class CardController
     private function normalizeSchedule(array $schedule): array
     {
         return [
-            'id' => $schedule['id'],
+            'id' => (string) $schedule['id'],
             'name' => $schedule['name'],
         ];
     }

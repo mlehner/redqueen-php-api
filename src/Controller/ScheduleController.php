@@ -198,7 +198,7 @@ final class ScheduleController
     private function normalizeDoor(array $door): array
     {
         return [
-            'id' => $door['id'],
+            'id' => (string) $door['id'],
             'name' => $door['name'],
         ];
     }

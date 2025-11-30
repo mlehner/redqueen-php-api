@@ -18,6 +18,7 @@ class CardManager extends TimestampedManager
 
     protected function transformRow(array $data)
     {
+        $data['id'] = (string) $data['id'];
         $data['isActive'] = (bool) $data['isActive'];
 
         try {
@@ -36,7 +37,7 @@ class CardManager extends TimestampedManager
     {
         return $this->dbal->transactional(function () use ($id, $data): string {
             $originalCard = $this->findInternal($id);
-            $originalCard['schedules'] = array_map(fn ($id) => ['id' => $id], $this->getScheduleIds($id));
+            $originalCard['schedules'] = array_map(fn ($id) => ['id' => (string) $id], $this->getScheduleIds($id));
             $this->delete($id);
             return $this->create(array_merge($originalCard, $data));
         });
@@ -74,7 +75,7 @@ class CardManager extends TimestampedManager
 
         unset($result['pin']);
 
-        $result['schedules'] = array_map(fn ($id) => ['id' => $id], $this->getScheduleIds($id));
+        $result['schedules'] = array_map(fn ($id) => ['id' => (string) $id], $this->getScheduleIds($id));
 
         return $result;
     }

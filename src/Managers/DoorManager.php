@@ -18,4 +18,11 @@ class DoorManager extends TimestampedManager
     {
         return 'doors';
     }
+
+    protected function transformRow(array $data): array
+    {
+        $data['id'] = (string) $data['id'];
+
+        return $data;
+    }
 }

@@ -28,6 +28,7 @@ class ScheduleManager extends TimestampedManager
 
     protected function transformRow(array $data)
     {
+        $data['id'] = (string) $data['id'];
         $data['mon'] = (bool) $data['mon'];
         $data['tue'] = (bool) $data['tue'];
         $data['wed'] = (bool) $data['wed'];

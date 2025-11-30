@@ -58,6 +58,8 @@ final class LogManager extends TimestampedManager
 
     protected function transformRow(array $data): array
     {
+        $data['id'] = (string) $data['id'];
+
         try {
           $csn = CardSerialNumber::createFromHex($data['code']);
 
@@ -80,6 +82,10 @@ final class LogManager extends TimestampedManager
 
             if (!isset($data[$relation])) {
                 $data[$relation] = [];
+            }
+
+            if ($property === 'id' && is_int($value)) {
+                $value = (string) $value;
             }
 
             $data[$relation][$property] = $value;
