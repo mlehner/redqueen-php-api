@@ -91,7 +91,7 @@ final class CardController
         return new JsonResponse(['items' => $cards, 'count' => count($cards)]);
     }
 
-    #[Route(path: '/api/card/{id}', name: 'get_card', methods: Request::METHOD_GET)]
+    #[Route(path: '/api/cards/{id}', name: 'get_card', methods: Request::METHOD_GET)]
     public function getCard(string $id): Response
     {
         $card = $this->cardManager->find($id);
@@ -143,7 +143,7 @@ final class CardController
         return $response;
     }
 
-    #[Route(path: '/api/card/{id}', name: 'put_card', methods: Request::METHOD_PUT)]
+    #[Route(path: '/api/cards/{id}', name: 'put_card', methods: Request::METHOD_PUT)]
     public function putCard(Request $request, string $id): Response
     {
         $content = $request->getContent();
@@ -186,7 +186,7 @@ final class CardController
         return $response;
     }
 
-    #[Route(path: '/api/card/{id}', name: 'delete_card', methods: Request::METHOD_DELETE)]
+    #[Route(path: '/api/cards/{id}', name: 'delete_card', methods: Request::METHOD_DELETE)]
     public function deleteCard(string $id): Response
     {
         $this->cardManager->delete($id);

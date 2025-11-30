@@ -77,7 +77,7 @@ final class ScheduleController
         return new JsonResponse(['items' => $schedules, 'count' => count($schedules)]);
     }
 
-    #[Route(path: '/api/schedule/{id}', name: 'get_schedule', methods: Request::METHOD_GET)]
+    #[Route(path: '/api/schedules/{id}', name: 'get_schedule', methods: Request::METHOD_GET)]
     public function getSchedule(string $id): Response
     {
         $schedule = $this->scheduleManager->find($id);
@@ -125,7 +125,7 @@ final class ScheduleController
         return $response;
     }
 
-    #[Route(path: '/api/schedule/{id}', name: 'put_schedule', methods: Request::METHOD_PUT)]
+    #[Route(path: '/api/schedules/{id}', name: 'put_schedule', methods: Request::METHOD_PUT)]
     public function putSchedule(Request $request, string $id): Response
     {
         $schedule = $this->scheduleManager->find($id);

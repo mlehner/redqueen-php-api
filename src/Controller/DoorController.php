@@ -79,7 +79,7 @@ final class DoorController
         ]);
     }
 
-    #[Route(path: '/api/door/{id}', name: 'get_door', methods: Request::METHOD_GET)]
+    #[Route(path: '/api/doors/{id}', name: 'get_door', methods: Request::METHOD_GET)]
     public function getDoor(Request $request, string $id): Response
     {
         $door = $this->doorManager->find($id);
@@ -91,7 +91,7 @@ final class DoorController
         return new JsonResponse($door);
     }
 
-    #[Route(path: '/api/door/{id}', name: 'put_door', methods: Request::METHOD_PUT)]
+    #[Route(path: '/api/doors/{id}', name: 'put_door', methods: Request::METHOD_PUT)]
     public function putDoor(Request $request, string $id): Response
     {
         $door = $this->doorManager->find($id);
