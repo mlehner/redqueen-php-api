@@ -47,9 +47,7 @@ trait TestFixtureTrait
             (4, 1, '2022-08-20 10:00:00'),
             (4, 2, '2022-08-20 10:00:00')
             ;
-            SQL);
 
-        self::logConnection()->executeStatement(<<<'SQL'
             INSERT INTO `logs` (id, card_id, code, validPin, created_at, door_identifier) VALUES
             (1, null, 'F0A000', 0, '2025-02-20 08:00:00', 'out_door'),
             (2, null, 'F0A001', 1, '2025-02-20 08:05:00', 'in_door'),

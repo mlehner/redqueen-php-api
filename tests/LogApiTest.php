@@ -17,9 +17,6 @@ final class LogApiTest extends TestCase
     public function testGetLogs(): void
     {
         self::loadData();
-        // make sure data from primary is available
-        self::primaryConnection()->commit();
-        self::primaryConnection()->beginTransaction();
 
         $client = self::createClient();
         $client->request(Request::METHOD_GET, '/api/logs');

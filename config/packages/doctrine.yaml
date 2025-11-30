@@ -5,6 +5,3 @@ doctrine:
             primary:
                 url: '%env(resolve:REDQUEEN_DB_URL)%'
                 server_version: '8.0'
-            log:
-                url: '%env(resolve:REDQUEEN_LOG_DB_URL)%'
-                server_version: '8.0'

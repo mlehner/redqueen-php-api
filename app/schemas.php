@@ -79,7 +79,7 @@ $doorScheduleTable->addForeignKeyConstraint('doors', ['door_id'], ['id'], ['onDe
 
 $logSchema = new Schema();
 
-$logTable = $logSchema->createTable('logs');
+$logTable = $primarySchema->createTable('logs');
 
 $logTable->addColumn('id', 'bigint', ['unsigned' => true, 'notnull' => true, 'autoincrement' => true, 'length' => 20]);
 $logTable->addColumn('card_id', 'bigint', ['unsigned' => true, 'notnull' => false]);
