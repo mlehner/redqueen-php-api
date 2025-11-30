@@ -7,6 +7,8 @@ namespace BLInc\Controller;
 use BLInc\Managers\LogManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 final class LogController
 {
@@ -17,7 +19,8 @@ final class LogController
         $this->logManager = $logManager;
     }
 
-    public function getLogs(Request $request) {
+    #[Route(path: '/api/logs', name: 'get_logs', methods: Request::METHOD_GET)]
+    public function getLogs(Request $request): Response {
         if ($request->query->has('since')) {
             $since = $request->query->get('since');
             $sinceDateTime = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $since);

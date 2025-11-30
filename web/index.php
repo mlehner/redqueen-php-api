@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types=1);
+use BLInc\Kernel;
 
-ini_set('display_errors', 'off');
-ini_set('log_errors', 'on');
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-require_once __DIR__ . '/../app/bootstrap.php';
-require_once __DIR__ . '/../app/routes.php';
-
-$app->run();
+return function (array $context) {
+    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+};

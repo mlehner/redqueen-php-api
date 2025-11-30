@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace BLInc\Controller;
 
 use BLInc\Managers\DoorManager;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class DoorController
 {
@@ -40,6 +41,7 @@ final class DoorController
         ]);
     }
 
+    #[Route(path: '/api/doors', name: 'get_doors', methods: Request::METHOD_GET)]
     public function getDoors(Request $request): Response
     {
         $doors = $this->doorManager->findAll();
@@ -47,6 +49,7 @@ final class DoorController
         return new JsonResponse(['items' => $doors, 'count' => count($doors)]);
     }
 
+    #[Route(path: '/api/doors', name: 'post_door', methods: Request::METHOD_POST)]
     public function postDoor(Request $request): Response
     {
         $content = $request->getContent();
@@ -76,6 +79,7 @@ final class DoorController
         ]);
     }
 
+    #[Route(path: '/api/door/{id}', name: 'get_door', methods: Request::METHOD_GET)]
     public function getDoor(Request $request, string $id): Response
     {
         $door = $this->doorManager->find($id);
@@ -87,6 +91,7 @@ final class DoorController
         return new JsonResponse($door);
     }
 
+    #[Route(path: '/api/door/{id}', name: 'put_door', methods: Request::METHOD_PUT)]
     public function putDoor(Request $request, string $id): Response
     {
         $door = $this->doorManager->find($id);

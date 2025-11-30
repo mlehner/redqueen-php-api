@@ -6,7 +6,7 @@ namespace BLInc\Controller;
 
 use BLInc\Managers\DoorManager;
 use BLInc\Managers\ScheduleManager;
-use JMS\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Routing\Annotation\Route;
 
 final class ScheduleController
 {
@@ -67,6 +68,7 @@ final class ScheduleController
         ]);
     }
 
+    #[Route(path: '/api/schedules', name: 'get_schedules', methods: Request::METHOD_GET)]
     public function getSchedules(): Response
     {
         $schedules = $this->scheduleManager->findAll();
@@ -75,6 +77,7 @@ final class ScheduleController
         return new JsonResponse(['items' => $schedules, 'count' => count($schedules)]);
     }
 
+    #[Route(path: '/api/schedule/{id}', name: 'get_schedule', methods: Request::METHOD_GET)]
     public function getSchedule(string $id): Response
     {
         $schedule = $this->scheduleManager->find($id);
@@ -88,6 +91,7 @@ final class ScheduleController
         return new JSONResponse($schedules[0]);
     }
 
+    #[Route(path: '/api/schedules', name: 'post_schedule', methods: Request::METHOD_POST)]
     public function postSchedule(Request $request): Response
     {
         $content = $request->getContent();
@@ -121,6 +125,7 @@ final class ScheduleController
         return $response;
     }
 
+    #[Route(path: '/api/schedule/{id}', name: 'put_schedule', methods: Request::METHOD_PUT)]
     public function putSchedule(Request $request, string $id): Response
     {
         $schedule = $this->scheduleManager->find($id);

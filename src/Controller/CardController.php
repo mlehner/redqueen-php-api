@@ -8,12 +8,13 @@ use BLInc\Managers\CardManager;
 use BLInc\Managers\ScheduleManager;
 use BLInc\Model\CardSerialNumber;
 use BLInc\Validator\Constraints\Unique;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -81,6 +82,7 @@ final class CardController
         ]);
     }
 
+    #[Route(path: '/api/cards', name: 'get_cards', methods: Request::METHOD_GET)]
     public function getCards(): Response
     {
         $cards = $this->cardManager->findAll();
@@ -89,6 +91,7 @@ final class CardController
         return new JsonResponse(['items' => $cards, 'count' => count($cards)]);
     }
 
+    #[Route(path: '/api/card/{id}', name: 'get_card', methods: Request::METHOD_GET)]
     public function getCard(string $id): Response
     {
         $card = $this->cardManager->find($id);
@@ -100,6 +103,7 @@ final class CardController
         return new JsonResponse($card);
     }
 
+    #[Route(path: '/api/cards', name: 'post_card', methods: Request::METHOD_POST)]
     public function postCard(Request $request): Response
     {
         $content = $request->getContent();
@@ -139,6 +143,7 @@ final class CardController
         return $response;
     }
 
+    #[Route(path: '/api/card/{id}', name: 'put_card', methods: Request::METHOD_PUT)]
     public function putCard(Request $request, string $id): Response
     {
         $content = $request->getContent();
@@ -181,6 +186,7 @@ final class CardController
         return $response;
     }
 
+    #[Route(path: '/api/card/{id}', name: 'delete_card', methods: Request::METHOD_DELETE)]
     public function deleteCard(string $id): Response
     {
         $this->cardManager->delete($id);

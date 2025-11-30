@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    BLInc\:
+        resource: '../src/*'
+        exclude:
+            - '../src/Controller/'
+            - '../src/Kernel.php'
+
+    BLInc\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
