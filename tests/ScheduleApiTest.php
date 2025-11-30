@@ -6,9 +6,10 @@ use BLInc\Test\TestClientTrait;
 use BLInc\Test\TestDatabaseTrait;
 use BLInc\Test\TestFixtureTrait;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-final class ScheduleApiTest extends TestCase
+final class ScheduleApiTest extends KernelTestCase
 {
     use TestDatabaseTrait;
     use TestFixtureTrait;

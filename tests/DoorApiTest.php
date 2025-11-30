@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use BLInc\Test\TestClientTrait;
 use BLInc\Test\TestDatabaseTrait;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-final class DoorApiTest extends TestCase
+final class DoorApiTest extends KernelTestCase
 {
     use TestDatabaseTrait;
     use TestClientTrait;

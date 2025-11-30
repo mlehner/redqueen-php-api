@@ -5,10 +5,10 @@ declare(strict_types=1);
 use BLInc\Test\TestClientTrait;
 use BLInc\Test\TestDatabaseTrait;
 use BLInc\Test\TestFixtureTrait;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-final class CardApiTest extends TestCase
+final class CardApiTest extends KernelTestCase
 {
     use TestDatabaseTrait;
     use TestFixtureTrait;
