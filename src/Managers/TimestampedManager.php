@@ -44,7 +44,7 @@ abstract class TimestampedManager implements ManagerInterface
     {
         return $this->createQueryBuilder()
             ->where('id = :id')
-            ;
+        ;
     }
 
     protected function createQueryBuilder(): QueryBuilder
@@ -54,7 +54,7 @@ abstract class TimestampedManager implements ManagerInterface
         return $this->dbal->createQueryBuilder()
             ->select($this->dbal->quoteIdentifier($tableName) . '.*')
             ->from($tableName)
-            ;
+        ;
     }
 
     public function findAll()
@@ -98,7 +98,7 @@ abstract class TimestampedManager implements ManagerInterface
     public function delete($id): bool
     {
         return $this->updateInternal($id, [
-            'deleted_at' => date_create()->format(self::DATETIME_FORMAT)
+            'deleted_at' => date_create()->format(self::DATETIME_FORMAT),
         ]);
     }
 

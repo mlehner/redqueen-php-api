@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Doctrine\DBAL\Schema\Schema;
 
-$booleanColumnOptions = fn (bool $default = false) => [
+$booleanColumnOptions = fn(bool $default = false) => [
     'default' => ($default ? 1 : 0),
     'unsigned' => true,
-    'columnDefinition' => 'TINYINT UNSIGNED NOT NULL DEFAULT ' . ($default ? "'1'" : "'0'")
+    'columnDefinition' => 'TINYINT UNSIGNED NOT NULL DEFAULT ' . ($default ? "'1'" : "'0'"),
 ];
 
 $primarySchema = new Schema();

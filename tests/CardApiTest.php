@@ -27,17 +27,17 @@ final class CardApiTest extends KernelTestCase
 
     public function testGetCard(): void
     {
-       self::loadData();
-       $client = self::createClient();
+        self::loadData();
+        $client = self::createClient();
 
-       $expectedResponse = self::getDefaultCardList()['items'][0];
-       unset($expectedResponse['schedules'][0]['name'], $expectedResponse['schedules'][1]['name']);
-       $expectedResponse['deleted_at'] = null;
+        $expectedResponse = self::getDefaultCardList()['items'][0];
+        unset($expectedResponse['schedules'][0]['name'], $expectedResponse['schedules'][1]['name']);
+        $expectedResponse['deleted_at'] = null;
 
-       $client->request(Request::METHOD_GET, '/api/cards/1');
-       self::assertSame(200, $client->getResponse()->getStatusCode());
-       self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
-       self::assertJsonStringEqualsJsonString(json_encode($expectedResponse, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
+        $client->request(Request::METHOD_GET, '/api/cards/1');
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        self::assertSame('application/json', $client->getResponse()->headers->get('Content-Type'));
+        self::assertJsonStringEqualsJsonString(json_encode($expectedResponse, JSON_THROW_ON_ERROR), $client->getResponse()->getContent());
     }
 
     public function testPostCard(): void
@@ -218,14 +218,14 @@ final class CardApiTest extends KernelTestCase
             ['schedules' => [['id' => '2']]],
             ['schedules' => [
                 ['id' => '2'],
-            ]]
+            ]],
         ];
         yield 'replace schedule' => [
             ['schedules' => [['id' => '1'], ['id' => '3']]],
             ['schedules' => [
                 ['id' => '1'],
                 ['id' => '3'],
-            ]]
+            ]],
         ];
     }
 

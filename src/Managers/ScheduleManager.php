@@ -23,7 +23,7 @@ class ScheduleManager extends TimestampedManager
             ->leftJoin('cs', 'cards', 'c', 'cs.card_id = c.id')
             ->andWhere('c.deleted_at IS NULL')
             ->groupBy('schedules.id')
-            ;
+        ;
     }
 
     protected function transformRow(array $data)
@@ -56,7 +56,7 @@ class ScheduleManager extends TimestampedManager
                 unset($data['doors']);
 
                 $doorIds = [];
-                foreach($doors as $door) {
+                foreach ($doors as $door) {
                     $doorIds[] = $door['id'];
                 }
 
@@ -118,7 +118,7 @@ class ScheduleManager extends TimestampedManager
             return null;
         }
 
-        $result['doors'] = array_map(fn ($id) => ['id' => $id], $this->getDoorIds($id));
+        $result['doors'] = array_map(fn($id) => ['id' => $id], $this->getDoorIds($id));
 
         return $result;
     }
@@ -135,7 +135,7 @@ class ScheduleManager extends TimestampedManager
         $rows = $this->dbal->fetchAllAssociative($query, ['scheduleId' => $id]);
 
         $ids = [];
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $ids[] = $row['door_id'];
         }
 

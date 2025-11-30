@@ -20,7 +20,8 @@ final class LogController
     }
 
     #[Route(path: '/api/logs', name: 'get_logs', methods: Request::METHOD_GET)]
-    public function getLogs(Request $request): Response {
+    public function getLogs(Request $request): Response
+    {
         if ($request->query->has('since')) {
             $since = $request->query->get('since');
             $sinceDateTime = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $since);

@@ -61,10 +61,10 @@ final class LogManager extends TimestampedManager
         $data['id'] = (string) $data['id'];
 
         try {
-          $csn = CardSerialNumber::createFromHex($data['code']);
+            $csn = CardSerialNumber::createFromHex($data['code']);
 
-          $data['facilityCode'] = $csn->getFacilityCode();
-          $data['cardNumber'] = $csn->getCardNumber();
+            $data['facilityCode'] = $csn->getFacilityCode();
+            $data['cardNumber'] = $csn->getCardNumber();
         } catch (\Throwable $e) {
         }
 
@@ -78,7 +78,7 @@ final class LogManager extends TimestampedManager
                 continue;
             }
 
-            list($relation, $property) = explode('__', $key, 2);
+            [$relation, $property] = explode('__', $key, 2);
 
             if (!isset($data[$relation])) {
                 $data[$relation] = [];

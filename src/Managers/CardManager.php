@@ -37,7 +37,7 @@ class CardManager extends TimestampedManager
     {
         return $this->dbal->transactional(function () use ($id, $data): string {
             $originalCard = $this->findInternal($id);
-            $originalCard['schedules'] = array_map(fn ($id) => ['id' => (string) $id], $this->getScheduleIds($id));
+            $originalCard['schedules'] = array_map(fn($id) => ['id' => (string) $id], $this->getScheduleIds($id));
             $this->delete($id);
             return $this->create(array_merge($originalCard, $data));
         });
@@ -75,7 +75,7 @@ class CardManager extends TimestampedManager
 
         unset($result['pin']);
 
-        $result['schedules'] = array_map(fn ($id) => ['id' => (string) $id], $this->getScheduleIds($id));
+        $result['schedules'] = array_map(fn($id) => ['id' => (string) $id], $this->getScheduleIds($id));
 
         return $result;
     }
@@ -98,7 +98,7 @@ class CardManager extends TimestampedManager
         $rows = $this->dbal->fetchAllAssociative($query, ['cardId' => $id]);
 
         $ids = [];
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $ids[] = $row['schedule_id'];
         }
 
@@ -135,14 +135,14 @@ class CardManager extends TimestampedManager
             ->addSelect('c.pin')
             ->andWhere('id = :id')
             ->addSelect('c.deleted_at')
-            ;
+        ;
     }
 
     protected function getFindAllQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder()
             ->where('deleted_at IS NULL')
-            ;
+        ;
     }
 
     protected function createQueryBuilder(): QueryBuilder
@@ -159,6 +159,6 @@ class CardManager extends TimestampedManager
             ->from(self::TABLE_NAME, 'c')
             ->orderBy('c.created_at', 'DESC')
             ->addOrderBy('c.id', 'ASC')
-            ;
+        ;
     }
 }
