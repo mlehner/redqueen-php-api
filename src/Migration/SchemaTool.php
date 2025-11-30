@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BLInc\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Schema;
 
@@ -19,23 +20,31 @@ final class SchemaTool
 
     public function recreateDatabase(): void
     {
-        $database = $this->connection->getDatabase();
-        $this->connection->getSchemaManager()->tryMethod('dropDatabase', $database);
-        $this->connection->getSchemaManager()->createDatabase($database);
-        $this->connection->close();
-        $this->connection->connect();
+        $params = $this->connection->getParams();
+        $database = $params['dbname'];
+        unset($params['dbname']);
+
+        $connection = DriverManager::getConnection($params, $this->connection->getConfiguration());
+        $schemaManager = $connection->createSchemaManager();
+        $schemaManager->dropDatabase($database);
+        $schemaManager->createDatabase($database);
+        $connection->close();
     }
 
     public function generateSql(Schema $schema): iterable
     {
-        $schemaManager = $this->connection->getSchemaManager();
+        $schemaManager = $this->connection->createSchemaManager();
 
-        $fromSchema = $schemaManager->createSchema();
+        try {
+            $fromSchema = $schemaManager->introspectSchema();
+        } catch (\Throwable) {
+            $fromSchema = new Schema();
+        }
 
         $comparator = new Comparator();
-        $schemaDiff = $comparator->compare($fromSchema, $schema);
+        $schemaDiff = $comparator->compareSchemas($fromSchema, $schema);
 
-        return $schemaDiff->toSaveSql($this->connection->getDatabasePlatform());
+        return $this->connection->getDatabasePlatform()->getAlterSchemaSQL($schemaDiff);
     }
 
     public function executeSchemaSql(Schema $schema): void
