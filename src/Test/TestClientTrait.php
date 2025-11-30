@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace BLInc\Test;
 
-use Symfony\Component\HttpKernel\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 trait TestClientTrait
 {
-    private static function createClient(): Client
+    private static function createClient(): KernelBrowser
     {
-        global $app;
-
-        return new Client($app);
+        return static::getContainer()->get('test.client');
     }
 }
