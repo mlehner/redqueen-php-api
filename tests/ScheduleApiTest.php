@@ -117,7 +117,7 @@ final class ScheduleApiTest extends KernelTestCase
 
         $client->request(Request::METHOD_GET, '/api/schedules');
 
-        $schedule['number_of_cards'] = '0';
+        $schedule['number_of_cards'] = 0;
 
         $schedules = self::getDefaultScheduleList();
         $schedules['count']++;
@@ -251,7 +251,7 @@ final class ScheduleApiTest extends KernelTestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card_pin',
-                    'number_of_cards' => '3',
+                    'number_of_cards' => 3,
                     'doors' => [
                         ['id' => '1', 'name' => 'Outside Door'],
                     ],
@@ -271,7 +271,7 @@ final class ScheduleApiTest extends KernelTestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card',
-                    'number_of_cards' => '2',
+                    'number_of_cards' => 2,
                     'doors' => [
                         ['id' => '2', 'name' => 'Inside Door'],
                     ],
@@ -291,7 +291,7 @@ final class ScheduleApiTest extends KernelTestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card_pin',
-                    'number_of_cards' => '0',
+                    'number_of_cards' => 0,
                     'doors' => [
                         ['id' => '1', 'name' => 'Outside Door'],
                     ],
@@ -311,7 +311,7 @@ final class ScheduleApiTest extends KernelTestCase
                     'created_at' => '2024-05-12 08:00:00',
                     'updated_at' => '2024-05-12 08:00:00',
                     'authenticationMode' => 'card',
-                    'number_of_cards' => '1',
+                    'number_of_cards' => 1,
                     'doors' => [
                         ['id' => '2', 'name' => 'Inside Door'],
                     ],
