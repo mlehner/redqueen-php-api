@@ -28,6 +28,6 @@ final class SchemaLoader
             return;
         }
 
-        $this->schemas = require __DIR__ . '/../../../app/schemas.php';
+        $this->schemas = require __DIR__ . '/../../app/schemas.php';
     }
 }
