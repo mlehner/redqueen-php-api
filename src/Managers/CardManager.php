@@ -95,7 +95,7 @@ class CardManager extends TimestampedManager
     {
         $query = 'SELECT schedule_id FROM card_schedule WHERE card_id = :cardId';
 
-        $rows = $this->dbal->fetchAll($query, ['cardId' => $id]);
+        $rows = $this->dbal->fetchAllAssociative($query, ['cardId' => $id]);
 
         $ids = [];
         foreach($rows as $row) {

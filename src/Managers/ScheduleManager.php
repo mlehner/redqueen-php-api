@@ -12,7 +12,7 @@ class ScheduleManager extends TimestampedManager
     public function findByCards(array $cardIds): iterable
     {
         $query = 'SELECT s.*,cs.card_id FROM schedules s LEFT JOIN card_schedule cs ON (s.id = cs.schedule_id) WHERE cs.card_id IN (:cardIds)';
-        return array_map([$this, 'transformRow'], $this->dbal->fetchAll($query, ['cardIds' => $cardIds], ['cardIds' => Connection::PARAM_INT_ARRAY]));
+        return array_map([$this, 'transformRow'], $this->dbal->fetchAllAssociative($query, ['cardIds' => $cardIds], ['cardIds' => Connection::PARAM_INT_ARRAY]));
     }
 
     protected function getFindAllQueryBuilder(): QueryBuilder
@@ -132,7 +132,7 @@ class ScheduleManager extends TimestampedManager
     {
         $query = 'SELECT door_id FROM door_schedule WHERE schedule_id = :scheduleId';
 
-        $rows = $this->dbal->fetchAll($query, ['scheduleId' => $id]);
+        $rows = $this->dbal->fetchAllAssociative($query, ['scheduleId' => $id]);
 
         $ids = [];
         foreach($rows as $row) {
