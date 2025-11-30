@@ -122,7 +122,7 @@ final class CardController
             $card['code'] = CardSerialNumber::createFromStrings($card['facilityCode'], $card['cardNumber'])->getHexCsn();
         }
 
-        $violations = $this->validator->validateValue($card, $this->constraint, 'new');
+        $violations = $this->validator->validate($card, $this->constraint, 'new');
 
         if (count($violations)) {
             return new Response(
@@ -165,7 +165,7 @@ final class CardController
             $card['code'] = CardSerialNumber::createFromStrings($card['facilityCode'], $card['cardNumber'])->getHexCsn();
         }
 
-        $violations = $this->validator->validateValue($card, $constraints, 'edit');
+        $violations = $this->validator->validate($card, $constraints, 'edit');
 
         if (count($violations)) {
             return new Response(

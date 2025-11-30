@@ -60,7 +60,7 @@ final class DoorController
             return new JsonResponse([['message' => 'Request must contain a hash or properties.']], 400);
         }
 
-        $violations = $this->validator->validateValue($doorRequest, $this->doorConstraint, 'new');
+        $violations = $this->validator->validate($doorRequest, $this->doorConstraint, 'new');
 
         if (count($violations)) {
             return new Response(
@@ -108,7 +108,7 @@ final class DoorController
             return new JsonResponse([['message' => 'Request must contain a hash or properties.']], 400);
         }
 
-        $violations = $this->validator->validateValue($doorRequest, $this->doorConstraint, 'edit');
+        $violations = $this->validator->validate($doorRequest, $this->doorConstraint, 'edit');
 
         if (count($violations)) {
             return new Response(

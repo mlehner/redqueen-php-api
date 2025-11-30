@@ -106,7 +106,7 @@ final class ScheduleController
             return new JsonResponse([['message' => 'Request must contain a hash or properties.']], 400);
         }
 
-        $violations = $this->validator->validateValue($schedule, $this->constraint, 'new');
+        $violations = $this->validator->validate($schedule, $this->constraint, 'new');
 
         if (count($violations)) {
             return new Response(
@@ -149,7 +149,7 @@ final class ScheduleController
         $constraints = clone $this->constraint;
         $constraints->allowMissingFields = true;
 
-        $violations = $this->validator->validateValue($schedule, $constraints, 'edit');
+        $violations = $this->validator->validate($schedule, $constraints, 'edit');
 
         if (count($violations)) {
             return new Response(
