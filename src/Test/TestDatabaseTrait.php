@@ -6,30 +6,30 @@ namespace BLInc\Test;
 
 use BLInc\Migration\SchemaLoader;
 use BLInc\Migration\SchemaTool;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\BeforeClass;
 
 trait TestDatabaseTrait
 {
-    public static function setUpBeforeClass(): void
+    #[BeforeClass]
+    public static function rebuildDatabase(): void
     {
-        self::rebuildDatabase();
-    }
+        $keepStaticConnections = StaticDriver::isKeepStaticConnections();
+        if ($keepStaticConnections) {
+            StaticDriver::setKeepStaticConnections(false);
+        }
 
-    public function setUp(): void
-    {
-        self::beforeTest();
-    }
-
-    public function tearDown(): void
-    {
-        self::afterTest();
-    }
-
-    private static function rebuildDatabase(): void
-    {
         $primarySchemaTool = self::rebuildPrimaryDatabase();
 
         self::rebuildPrimarySchema($primarySchemaTool);
+
+        self::primaryConnection()->close();
+
+        if ($keepStaticConnections) {
+            StaticDriver::setKeepStaticConnections(true);
+        }
     }
 
     private static function rebuildPrimaryDatabase(): SchemaTool
@@ -46,16 +46,19 @@ trait TestDatabaseTrait
         $schemaTool->executeSchemaSql($schemaLoader->getPrimarySchema());
     }
 
-    private static function beforeTest(): void
+    #[Before]
+    public static function beforeTest(): void
     {
         $primaryConnection = self::primaryConnection();
 
-        foreach ($primaryConnection->getSchemaManager()->listTables() as $table) {
+        // ALTER will close the transaction implicitly, so just do it manually
+        StaticDriver::commit();
+
+        foreach ($primaryConnection->createSchemaManager()->listTables() as $table) {
             $primaryConnection->executeStatement('ALTER TABLE `' . $table->getName() . '` AUTO_INCREMENT=1');
         }
 
-
-        $primaryConnection->beginTransaction();
+        StaticDriver::beginTransaction();
     }
 
     private static function primaryConnection(): Connection
